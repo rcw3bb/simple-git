@@ -7,7 +7,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class SimpleGitPluginTest {
+class GitTaskTest {
     private Project project;
 
     @BeforeEach
@@ -19,14 +19,23 @@ class SimpleGitPluginTest {
     }
 
     @Test
+    public void testCommand() {
+        def gitTask = project.tasks.gitTask
+
+        gitTask.executeCommand()
+        def gitExe = gitTask.getGitExe()
+        def cmd = gitTask.getCommand()
+
+        assertEquals("${gitExe} --help".toString(), cmd)
+    }
+
+    @Test
     public void testVerbose() {
-        project.tasks.gitTask.executeCommand()
         assertTrue(project.extensions.simple_git.verbose)
     }
 
     @Test
     public void testNoop() {
-        project.tasks.gitTask.executeCommand()
         assertTrue(project.extensions.simple_git.noop)
     }
 

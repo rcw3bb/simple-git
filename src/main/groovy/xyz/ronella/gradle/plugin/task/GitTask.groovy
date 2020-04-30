@@ -2,6 +2,7 @@ package xyz.ronella.gradle.plugin.task
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import xyz.ronella.gradle.plugin.GitExecutor
 import xyz.ronella.gradle.plugin.OSType
@@ -9,6 +10,7 @@ import xyz.ronella.gradle.plugin.SimpleGitPluginExtension
 
 class GitTask extends DefaultTask {
 
+    @Internal
     protected String[] internalArgs = []
 
     @Input
@@ -22,7 +24,6 @@ class GitTask extends DefaultTask {
         description = 'Execute git command.'
     }
 
-    @Input
     public String[] getAllArgs() {
         String[] newArgs = internalArgs + args
 
@@ -70,18 +71,32 @@ class GitTask extends DefaultTask {
         return null
     }
 
-    @TaskAction
-    def executeCommand() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
-
+    private GitExecutor getExecutor() {
         def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
 
         builder.addKnownGitExe(knownGit)
-        builder.addArg(command)
+        if (command) {
+            builder.addArg(command)
+        }
         builder.addArgs(allArgs)
 
-        def executor = builder.build()
+        return builder.build()
+    }
+
+    public String getCommand() {
+        return getExecutor().command
+    }
+
+    public String getGitExe() {
+        return getExecutor().gitExe
+    }
+
+    @TaskAction
+    def executeCommand() {
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+
+        def executor = getExecutor()
         executor.execute { ___command, ___args ->
             String[] fullCommand = [___command]
             fullCommand+= ___args.toArray()

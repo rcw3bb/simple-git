@@ -2,6 +2,7 @@ package xyz.ronella.gradle.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import xyz.ronella.gradle.plugin.task.GitClone
 import xyz.ronella.gradle.plugin.task.GitTask
 
 class SimpleGitPlugin implements Plugin<Project> {
@@ -10,5 +11,6 @@ class SimpleGitPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('simple_git', SimpleGitPluginExtension)
         project.task('gitTask', type: GitTask)
+        project.task('gitClone', type: GitClone)
     }
 }
