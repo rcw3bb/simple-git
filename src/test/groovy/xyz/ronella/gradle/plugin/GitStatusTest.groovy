@@ -7,7 +7,8 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class GitTaskTest {
+class GitStatusTest {
+
     private Project project;
 
     @BeforeEach
@@ -19,25 +20,25 @@ class GitTaskTest {
     }
 
     @Test
-    public void testCommand() {
-        def gitTask = project.tasks.gitTask
-        gitTask.directory = new File("D:/dev/tmp/simple-git")
-        gitTask.executeCommand()
+    public void testNoParameters() {
+        def gitTask = project.tasks.gitStatus
 
+        gitTask.executeCommand()
         def gitExe = gitTask.getGitExe()
         def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} --help".toString(), cmd)
+        assertEquals("${gitExe} status".toString(), cmd)
     }
 
     @Test
-    public void testVerbose() {
-        assertTrue(project.extensions.simple_git.verbose)
-    }
+    public void testDirectory() {
+        def gitTask = project.tasks.gitStatus
+        gitTask.directory=new File('C:\\directory')
 
-    @Test
-    public void testNoop() {
-        assertTrue(project.extensions.simple_git.noop)
-    }
+        gitTask.executeCommand()
+        def gitExe = gitTask.getGitExe()
+        def cmd = gitTask.getCommand()
 
+        assertEquals("${gitExe} status".toString(), cmd)
+    }
 }

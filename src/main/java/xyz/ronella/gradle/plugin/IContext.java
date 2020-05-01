@@ -1,0 +1,12 @@
+package xyz.ronella.gradle.plugin;
+
+import java.nio.file.Path;
+import java.util.List;
+
+public interface IContext {
+    String getCommand();
+    String getGitExe();
+    List<String> getArgs();
+    List<String> getOpts();
+    Path getScript();
+}

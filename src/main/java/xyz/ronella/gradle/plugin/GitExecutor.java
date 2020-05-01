@@ -1,11 +1,16 @@
 package xyz.ronella.gradle.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class GitExecutor {
@@ -16,10 +21,13 @@ public class GitExecutor {
 
     private final List<String> args;
 
+    private final List<String> opts;
+
     private final String knownGitExe;
 
     private GitExecutor(GitExecutorBuilder builder) {
         this.args = builder.args;
+        this.opts = builder.opts;
         this.knownGitExe = builder.knownGitExe;
     }
 
@@ -58,15 +66,66 @@ public class GitExecutor {
             }
         }
 
-        return command;
+        return command==null ? null : String.format("\"%s\"", command);
     }
 
-    public void execute(BiConsumer<String, List<String>> logic) {
-        logic.accept(getGitExe(), getArgs());
+    private Path getScriptPath(String script) {
+        final String DEFAULT_JOIN_DELIMITER = "/";
+        final String SCRIPTS_DIR = "scripts";
+
+        String internalScript = String.join(DEFAULT_JOIN_DELIMITER, SCRIPTS_DIR, script);
+        Path pathScript = Paths.get(".", SCRIPTS_DIR).toAbsolutePath();
+        File fileScript = pathScript.toFile();
+        Path outputScript = Paths.get(fileScript.toString(), script);
+
+        if (!outputScript.toFile().exists()) {
+            fileScript.mkdirs();
+            try (InputStream isStream = this.getClass().getClassLoader().getResourceAsStream(internalScript)) {
+                Files.copy(isStream, outputScript);
+            }
+            catch(IOException ioe){
+                throw new RuntimeException(ioe);
+            }
+        }
+
+        return outputScript;
+    }
+
+    public void execute(Consumer<IContext> logic) {
+        logic.accept(new IContext() {
+            @Override
+            public String getCommand() {
+                return GitExecutor.this.getCommand();
+            }
+
+            @Override
+            public String getGitExe() {
+                return GitExecutor.this.getGitExe();
+            }
+
+            @Override
+            public List<String> getArgs() {
+                return GitExecutor.this.getArgs();
+            }
+
+            @Override
+            public List<String> getOpts() {
+                return GitExecutor.this.getOpts();
+            }
+
+            @Override
+            public Path getScript() {
+                return GitExecutor.this.getScriptPath(IScript.getInstance(OSType.identify()).getScript());
+            }
+        });
     }
 
     public List<String> getArgs() {
         return new ArrayList<>(args);
+    }
+
+    public List<String> getOpts() {
+        return new ArrayList<>(opts);
     }
 
     public String getCommand() {
@@ -76,16 +135,24 @@ public class GitExecutor {
             return null;
         }
 
-        StringBuilder command = new StringBuilder(gitExe);
-        if (null!=args && args.size() > 0) {
-            command.append(" ").append(String.join(" ",args));
+        StringBuilder command = new StringBuilder();
+        command.append(getGitExe());
+
+        if (null!=opts && opts.size() > 0) {
+            command.append(" ").append(String.join(" ", opts));
         }
+
+        if (null!=args && args.size() > 0) {
+            command.append(" ").append(String.join(" ", args));
+        }
+
         return command.toString();
     }
 
     private static class GitExecutorBuilder {
 
         private final List<String> args = new ArrayList<>();
+        private final List<String> opts = new ArrayList<>();
         private String knownGitExe;
 
         public GitExecutorBuilder addKnownGitExe(String knownGitExe) {
@@ -103,6 +170,13 @@ public class GitExecutor {
         public GitExecutorBuilder addArgs(String ... args) {
             if (null!=args) {
                 this.args.addAll(Arrays.asList(args));
+            }
+            return this;
+        }
+
+        public GitExecutorBuilder addOpts(String ... opts) {
+            if (null!=opts) {
+                this.opts.addAll(Arrays.asList(opts));
             }
             return this;
         }

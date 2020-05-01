@@ -39,7 +39,7 @@ class GitCloneTest {
         def gitExe = gitTask.getGitExe()
         def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} clone ${gitTask.repository} ${project.projectDir.absolutePath}".toString(), cmd)
+        assertEquals("${gitExe} clone \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
     @Test
@@ -52,7 +52,7 @@ class GitCloneTest {
         def gitExe = gitTask.getGitExe()
         def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} clone --branch ${gitTask.branch} ${gitTask.repository} ${project.projectDir.absolutePath}".toString(), cmd)
+        assertEquals("${gitExe} clone --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
     @Test
@@ -66,7 +66,7 @@ class GitCloneTest {
         def gitExe = gitTask.getGitExe()
         def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} clone --branch ${gitTask.branch} ${gitTask.repository} C:\\directory".toString(), cmd)
+        assertEquals("${gitExe} clone --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"C:\\directory\"".toString(), cmd)
     }
 
     @Test
@@ -81,7 +81,22 @@ class GitCloneTest {
         def gitExe = gitTask.getGitExe()
         def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} clone -c dummy --branch ${gitTask.branch} ${gitTask.repository} ${project.projectDir.absolutePath}".toString(), cmd)
+        assertEquals("${gitExe} clone -c dummy --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
+    }
+
+    @Test
+    public void testOptions() {
+        def gitTask = project.tasks.gitClone
+        gitTask.options+='-c'
+        gitTask.options+='dummy'
+        gitTask.repository="https://git.com/dummy"
+        gitTask.branch="master"
+
+        gitTask.executeCommand()
+        def gitExe = gitTask.getGitExe()
+        def cmd = gitTask.getCommand()
+
+        assertEquals("${gitExe} -c dummy clone --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
 }

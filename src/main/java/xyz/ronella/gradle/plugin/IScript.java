@@ -4,10 +4,11 @@ import xyz.ronella.gradle.plugin.impl.LinuxOS;
 import xyz.ronella.gradle.plugin.impl.OtherOS;
 import xyz.ronella.gradle.plugin.impl.WindowsOS;
 
-public interface IExecutable {
-    String getExecutable();
+public interface IScript {
 
-    public static IExecutable getInstance(OSType osType) {
+    String getScript();
+
+    public static IScript getInstance(OSType osType) {
         switch (osType) {
             case Windows:
                 return new WindowsOS();
