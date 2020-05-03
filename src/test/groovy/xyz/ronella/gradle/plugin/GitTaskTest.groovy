@@ -24,10 +24,13 @@ class GitTaskTest {
         gitTask.directory = new File("D:/dev/tmp/simple-git")
         gitTask.executeCommand()
 
-        def gitExe = gitTask.getGitExe()
-        def cmd = gitTask.getCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
 
-        assertEquals("${gitExe} --help".toString(), cmd)
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} --help".toString(), cmd)
     }
 
     @Test

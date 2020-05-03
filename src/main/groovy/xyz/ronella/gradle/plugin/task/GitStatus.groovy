@@ -5,6 +5,6 @@ class GitStatus extends GitTask {
     public GitStatus() {
         super()
         command = 'status'
-        pushDirectory = true
+        forceDirectory = true
     }
 }

@@ -9,4 +9,7 @@ public interface IContext {
     List<String> getArgs();
     List<String> getOpts();
     Path getScript();
+    Path getDirectory();
+    String getExecutable();
+    List<String> getExecArgs();
 }

@@ -9,8 +9,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class GitExecutor {
@@ -25,10 +25,16 @@ public class GitExecutor {
 
     private final String knownGitExe;
 
+    private final boolean forceDirectory;
+
+    private final Path directory;
+
     private GitExecutor(GitExecutorBuilder builder) {
         this.args = builder.args;
         this.opts = builder.opts;
         this.knownGitExe = builder.knownGitExe;
+        this.forceDirectory = builder.forceDirectory;
+        this.directory = builder.directory;
     }
 
     private String getProgramFile(Path programFile) {
@@ -36,6 +42,15 @@ public class GitExecutor {
             return programFile.toString();
         }
         return null;
+    }
+
+    private String quoteString(String text) {
+        if (text==null) {
+            return null;
+        }
+        else {
+            return String.format("\"%s\"", text);
+        }
     }
 
     private String getKnownGitExe() {
@@ -66,15 +81,16 @@ public class GitExecutor {
             }
         }
 
-        return command==null ? null : String.format("\"%s\"", command);
+        return command==null ? null : quoteString(command);
     }
 
     private Path getScriptPath(String script) {
         final String DEFAULT_JOIN_DELIMITER = "/";
         final String SCRIPTS_DIR = "scripts";
+        final Path SCRIPT_LOCATION = Paths.get(".gradle", "simple", "git");
 
         String internalScript = String.join(DEFAULT_JOIN_DELIMITER, SCRIPTS_DIR, script);
-        Path pathScript = Paths.get(".", SCRIPTS_DIR).toAbsolutePath();
+        Path pathScript = Paths.get(".", SCRIPT_LOCATION.toString(), SCRIPTS_DIR).toAbsolutePath();
         File fileScript = pathScript.toFile();
         Path outputScript = Paths.get(fileScript.toString(), script);
 
@@ -89,6 +105,14 @@ public class GitExecutor {
         }
 
         return outputScript;
+    }
+
+    public Path getScript() {
+        return getScriptPath(IScript.getInstance(OSType.identify()).getScript());
+    }
+
+    public Path getDirectory() {
+        return directory;
     }
 
     public void execute(Consumer<IContext> logic) {
@@ -115,7 +139,22 @@ public class GitExecutor {
 
             @Override
             public Path getScript() {
-                return GitExecutor.this.getScriptPath(IScript.getInstance(OSType.identify()).getScript());
+                return GitExecutor.this.getScript();
+            }
+
+            @Override
+            public Path getDirectory() {
+                return GitExecutor.this.getDirectory();
+            }
+
+            @Override
+            public String getExecutable() {
+                return GitExecutor.this.getExecutable();
+            }
+
+            @Override
+            public List<String> getExecArgs() {
+                return GitExecutor.this.getExecArgs();
             }
         });
     }
@@ -128,23 +167,50 @@ public class GitExecutor {
         return new ArrayList<>(opts);
     }
 
-    public String getCommand() {
+    public String getExecutable() {
         String gitExe = getGitExe();
 
-        if (null==gitExe) {
+        if (gitExe==null) {
             return null;
         }
 
-        StringBuilder command = new StringBuilder();
-        command.append(getGitExe());
+        if (forceDirectory && null!=directory && null!=getScript()) {
+            return quoteString(getScript().toString());
+        }
+        else {
+            return gitExe;
+        }
+    }
+
+    public List<String> getExecArgs() {
+        List<String> execArgs = new ArrayList<>();
+        if (forceDirectory && null!=directory && null!=getScript()) {
+            execArgs.add(quoteString(directory.toString()));
+            execArgs.add(getGitExe());
+        }
 
         if (null!=opts && opts.size() > 0) {
-            command.append(" ").append(String.join(" ", opts));
+            execArgs.addAll(opts);
         }
 
         if (null!=args && args.size() > 0) {
-            command.append(" ").append(String.join(" ", args));
+            execArgs.addAll(args);
         }
+
+        return execArgs;
+    }
+
+    public String getCommand() {
+        String executable = getExecutable();
+        final String DELIM=" ";
+        Function<String, String> quoter = ___text -> String.format("\"%s\"", ___text);
+
+        if (null==executable) {
+            return null;
+        }
+
+        StringBuilder command = new StringBuilder(executable);
+        getExecArgs().forEach(___arg -> command.append(DELIM).append(String.join(DELIM, ___arg)));
 
         return command.toString();
     }
@@ -154,6 +220,8 @@ public class GitExecutor {
         private final List<String> args = new ArrayList<>();
         private final List<String> opts = new ArrayList<>();
         private String knownGitExe;
+        private boolean forceDirectory;
+        private Path directory;
 
         public GitExecutorBuilder addKnownGitExe(String knownGitExe) {
             this.knownGitExe = knownGitExe;
@@ -177,6 +245,18 @@ public class GitExecutor {
         public GitExecutorBuilder addOpts(String ... opts) {
             if (null!=opts) {
                 this.opts.addAll(Arrays.asList(opts));
+            }
+            return this;
+        }
+
+        public GitExecutorBuilder addForceDirectory(boolean forceDirectory) {
+            this.forceDirectory = forceDirectory;
+            return this;
+        }
+
+        public GitExecutorBuilder addDirectory(File directory) {
+            if (null!=directory) {
+                this.directory = directory.toPath();
             }
             return this;
         }

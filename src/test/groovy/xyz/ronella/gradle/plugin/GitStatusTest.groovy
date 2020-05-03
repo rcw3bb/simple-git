@@ -24,21 +24,30 @@ class GitStatusTest {
         def gitTask = project.tasks.gitStatus
 
         gitTask.executeCommand()
-        def gitExe = gitTask.getGitExe()
-        def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} status".toString(), cmd)
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} status".toString(), cmd)
     }
 
     @Test
     public void testDirectory() {
         def gitTask = project.tasks.gitStatus
-        gitTask.directory=new File('C:\\directory')
+
+        gitTask.directory=new File('D:\\dev\\tmp\\simple-git')
 
         gitTask.executeCommand()
-        def gitExe = gitTask.getGitExe()
-        def cmd = gitTask.getCommand()
 
-        assertEquals("${gitExe} status".toString(), cmd)
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} status".toString(), cmd)
     }
 }

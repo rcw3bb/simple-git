@@ -13,7 +13,7 @@ class GitClone extends GitTask {
     public GitClone() {
         super()
         command = 'clone'
-        pushDirectory = false
+        forceDirectory = false
     }
 
     @Override

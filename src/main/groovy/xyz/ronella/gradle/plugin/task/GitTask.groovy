@@ -14,7 +14,7 @@ import java.nio.file.Path
 class GitTask extends DefaultTask {
 
     @Optional @Input
-    protected boolean pushDirectory = true
+    protected boolean forceDirectory = true
 
     @Optional @Input
     String[] options = []
@@ -31,9 +31,10 @@ class GitTask extends DefaultTask {
     String[] args = []
 
     public GitTask() {
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
         group = 'Simple Git'
         description = 'Execute git command.'
-        directory = project.projectDir
+        directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
     }
 
     @Optional @Input
@@ -101,7 +102,7 @@ class GitTask extends DefaultTask {
         return null
     }
 
-    private GitExecutor getExecutor() {
+    public GitExecutor getExecutor() {
         def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
 
@@ -111,16 +112,10 @@ class GitTask extends DefaultTask {
         }
         builder.addArgs(allArgs)
         builder.addOpts(options)
+        builder.addForceDirectory(forceDirectory)
+        builder.addDirectory(directory)
 
         return builder.build()
-    }
-
-    public String getCommand() {
-        return getExecutor().command
-    }
-
-    public String getGitExe() {
-        return getExecutor().gitExe
     }
 
     @TaskAction
@@ -135,32 +130,13 @@ class GitTask extends DefaultTask {
                 String[] fullCommand = [context.command]
                 Path scriptFile = context.script
                 pluginExt.writeln("Script: " + scriptFile.toString())
-
-                if (pushDirectory && directory && scriptFile) {
-/*                    String[] newCommand = ["pushd \"${directory}\" &&"]
-                    newCommand += fullCommand
-                    newCommand += ["&& popd"]
-                    fullCommand = newCommand
-*/
-
-                    String[] newCommand = ["\"${scriptFile}\"", "\"${directory}\"", gitExe]
-                    String[] newArgs = context.opts.toArray()
-                    newArgs += context.args.toArray()
-
-                    if (newArgs) {
-                        def allArgs = newArgs.join(" ")
-                        newCommand += ["\"${allArgs}\""]
-                    }
-
-                    fullCommand = newCommand
-                }
-
                 pluginExt.writeln("OS: ${GitExecutor.OS_TYPE}")
                 pluginExt.writeln("Command to execute: ${fullCommand.join(' ')}")
 
                 if (!pluginExt.noop) {
                     project.exec {
-                        commandLine fullCommand
+                        executable context.executable
+                        args context.execArgs
                     }
                 } else {
                     pluginExt.writeln("No-operation is activated.")
