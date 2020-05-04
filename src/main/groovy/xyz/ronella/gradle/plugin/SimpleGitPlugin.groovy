@@ -2,6 +2,7 @@ package xyz.ronella.gradle.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import xyz.ronella.gradle.plugin.task.GitCheckout
 import xyz.ronella.gradle.plugin.task.GitClone
 import xyz.ronella.gradle.plugin.task.GitFetchPR
 import xyz.ronella.gradle.plugin.task.GitStatus
@@ -16,5 +17,6 @@ class SimpleGitPlugin implements Plugin<Project> {
         project.task('gitClone', type: GitClone)
         project.task('gitStatus', type: GitStatus)
         project.task('gitFetchPR', type: GitFetchPR)
+        project.task('gitCheckout', type: GitCheckout)
     }
 }

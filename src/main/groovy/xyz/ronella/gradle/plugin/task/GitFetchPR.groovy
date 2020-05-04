@@ -5,7 +5,6 @@ import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.exception.MissingPullRequestException
 import xyz.ronella.gradle.plugin.exception.MissingRemoteException
-import xyz.ronella.gradle.plugin.exception.MissingRepositoryException
 
 class GitFetchPR extends GitTask {
 
@@ -66,7 +65,9 @@ class GitFetchPR extends GitTask {
         }
 
         if (pullRequest) {
-            newArgs += "pull/${pullRequest}/head:pr-${pullRequest}"
+            def prBranch="pr-${pullRequest}"
+            newArgs += "pull/${pullRequest}/head:${prBranch}"
+            project.ext.sg_branch = prBranch
         }
         else {
             throw new MissingPullRequestException()
