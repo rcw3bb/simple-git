@@ -17,7 +17,7 @@ gradlePlugin {
             id = 'simple-git'
             displayName = 'Simple Git Plugin'
             description = 'The plugin that allows you access to git commands inside gradle as task'
-            implementationClass = 'xyz.ronella.gradle.plugin.SimpleGitPlugin'
+            implementationClass = 'xyz.ronella.gradle.plugin.simple.git.SimpleGitPlugin'
         }
     }
 }
