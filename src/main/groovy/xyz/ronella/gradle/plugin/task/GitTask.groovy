@@ -55,6 +55,11 @@ class GitTask extends DefaultTask {
             pluginExt.writeln("Found sg_directory: ${directory}")
         }
 
+        if (project.hasProperty('sg_command')) {
+            command = new File((project.sg_command as String).trim())
+            pluginExt.writeln("Found sg_command: ${command}")
+        }
+
         if (project.hasProperty('sg_options')) {
             options = (project.sg_options as String).split(",").toList().stream()
                     .map( {___arg -> ___arg.trim()})
