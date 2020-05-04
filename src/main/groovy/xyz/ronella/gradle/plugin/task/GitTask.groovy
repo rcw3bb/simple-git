@@ -10,6 +10,7 @@ import xyz.ronella.gradle.plugin.OSType
 import xyz.ronella.gradle.plugin.SimpleGitPluginExtension
 
 import java.nio.file.Path
+import java.util.stream.Collectors
 
 class GitTask extends DefaultTask {
 
@@ -49,9 +50,23 @@ class GitTask extends DefaultTask {
     public def initFields() {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
 
-        if (project.hasProperty('directory')) {
-            directory = new File((project.directory as String).trim())
-            pluginExt.writeln("Found directory: ${directory}")
+        if (project.hasProperty('sg_directory')) {
+            directory = new File((project.sg_directory as String).trim())
+            pluginExt.writeln("Found sg_directory: ${directory}")
+        }
+
+        if (project.hasProperty('sg_options')) {
+            options = (project.sg_options as String).split(",").toList().stream()
+                    .map( {___arg -> ___arg.trim()})
+                    .collect(Collectors.toList()).toArray()
+            pluginExt.writeln("Found sg_options: ${options}")
+        }
+
+        if (project.hasProperty('sg_args')) {
+            args = (project.sg_args as String).split(",").toList().stream()
+                    .map( { ___arg -> ___arg.trim()})
+                    .collect(Collectors.toList()).toArray()
+            pluginExt.writeln("Found sg_args: ${args}")
         }
     }
 

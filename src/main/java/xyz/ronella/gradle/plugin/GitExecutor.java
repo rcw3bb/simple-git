@@ -87,7 +87,7 @@ public class GitExecutor {
     private Path getScriptPath(String script) {
         final String DEFAULT_JOIN_DELIMITER = "/";
         final String SCRIPTS_DIR = "scripts";
-        final Path SCRIPT_LOCATION = Paths.get(".gradle", "simple", "git");
+        final Path SCRIPT_LOCATION = Paths.get("build", "simple", "git");
 
         String internalScript = String.join(DEFAULT_JOIN_DELIMITER, SCRIPTS_DIR, script);
         Path pathScript = Paths.get(".", SCRIPT_LOCATION.toString(), SCRIPTS_DIR).toAbsolutePath();
