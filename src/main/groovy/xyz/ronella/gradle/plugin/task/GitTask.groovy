@@ -156,7 +156,9 @@ class GitTask extends DefaultTask {
                 if (!pluginExt.noop) {
                     project.exec {
                         executable context.executable
-                        args context.execArgs
+                        if (context.execArgs) {
+                            args context.execArgs.toArray()
+                        }
                     }
                 } else {
                     pluginExt.writeln("No-operation is activated.")

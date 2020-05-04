@@ -9,7 +9,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class GitCheckoutTest {
+class GitBranchTest {
 
     private Project project;
 
@@ -23,7 +23,7 @@ class GitCheckoutTest {
 
     @Test
     public void testNoParameters() {
-        def gitTask = project.tasks.gitCheckout
+        def gitTask = project.tasks.gitBranch
 
         assertThrows(MissingBranchException, {
             gitTask.executeCommand()
@@ -31,24 +31,8 @@ class GitCheckoutTest {
     }
 
     @Test
-    public void testOtherParameters() {
-        def gitTask = project.tasks.gitCheckout
-        gitTask.args += 'test'
-
-        gitTask.executeCommand()
-        def executor = gitTask.executor
-        def gitExe = executor.gitExe
-        def cmd = executor.command
-        def script = executor.script.toString()
-        def directory = executor.directory.toString()
-
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout test".toString(), cmd)
-
-    }
-
-    @Test
     public void testBranch() {
-        def gitTask = project.tasks.gitCheckout
+        def gitTask = project.tasks.gitBranch
         gitTask.branch = 'master'
 
         gitTask.executeCommand()
@@ -58,8 +42,7 @@ class GitCheckoutTest {
         def script = executor.script.toString()
         def directory = executor.directory.toString()
 
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout \"${gitTask.branch}\"".toString(), cmd)
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch \"${gitTask.branch}\"".toString(), cmd)
 
     }
-
 }

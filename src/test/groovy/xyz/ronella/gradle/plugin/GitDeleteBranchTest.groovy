@@ -9,8 +9,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class GitCheckoutTest {
-
+class GitDeleteBranchTest {
     private Project project;
 
     @BeforeEach
@@ -23,7 +22,7 @@ class GitCheckoutTest {
 
     @Test
     public void testNoParameters() {
-        def gitTask = project.tasks.gitCheckout
+        def gitTask = project.tasks.gitDeleteBranch
 
         assertThrows(MissingBranchException, {
             gitTask.executeCommand()
@@ -31,24 +30,8 @@ class GitCheckoutTest {
     }
 
     @Test
-    public void testOtherParameters() {
-        def gitTask = project.tasks.gitCheckout
-        gitTask.args += 'test'
-
-        gitTask.executeCommand()
-        def executor = gitTask.executor
-        def gitExe = executor.gitExe
-        def cmd = executor.command
-        def script = executor.script.toString()
-        def directory = executor.directory.toString()
-
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout test".toString(), cmd)
-
-    }
-
-    @Test
-    public void testBranch() {
-        def gitTask = project.tasks.gitCheckout
+    public void testDeleteBranch() {
+        def gitTask = project.tasks.gitDeleteBranch
         gitTask.branch = 'master'
 
         gitTask.executeCommand()
@@ -58,8 +41,23 @@ class GitCheckoutTest {
         def script = executor.script.toString()
         def directory = executor.directory.toString()
 
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout \"${gitTask.branch}\"".toString(), cmd)
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch -d \"${gitTask.branch}\"".toString(), cmd)
+    }
 
+    @Test
+    public void testForceDelete() {
+        def gitTask = project.tasks.gitDeleteBranch
+        gitTask.branch = 'dummy'
+        gitTask.force = true
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch -D \"${gitTask.branch}\"".toString(), cmd)
     }
 
 }
