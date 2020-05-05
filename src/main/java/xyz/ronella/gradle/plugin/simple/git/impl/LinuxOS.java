@@ -11,6 +11,6 @@ public class LinuxOS implements IExecutable, IScript {
 
     @Override
     public String getScript() {
-        return null;
+        return "execute-git.sh";
     }
 }

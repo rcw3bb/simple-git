@@ -2,6 +2,8 @@ package xyz.ronella.gradle.plugin.simple.git.task
 
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import xyz.ronella.gradle.plugin.simple.git.GitExecutor
+import xyz.ronella.gradle.plugin.simple.git.OSType
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingRepositoryException
 
@@ -57,17 +59,17 @@ class GitClone extends GitTask {
 
         if (branch) {
             newArgs += '--branch'
-            newArgs += "\"${branch}\""
+            newArgs += GitExecutor.quoteString(branch, osType)
         }
 
         if (repository) {
-            newArgs += "\"${repository}\""
+            newArgs += GitExecutor.quoteString(repository, osType)
         }
         else {
             throw new MissingRepositoryException()
         }
 
-        newArgs += "\"${directory.absoluteFile.toString()}\""
+        newArgs += GitExecutor.quoteString(directory.absoluteFile.toString(), osType)
 
         return newArgs
     }

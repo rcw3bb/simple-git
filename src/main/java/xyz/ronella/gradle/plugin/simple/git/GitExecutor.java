@@ -44,13 +44,20 @@ public class GitExecutor {
         return null;
     }
 
-    private String quoteString(String text) {
+    public static String quoteString(String text) {
+        return quoteString(text, null);
+    }
+
+    public static String quoteString(String text, OSType osType) {
         if (text==null) {
             return null;
         }
         else {
-            return String.format("\"%s\"", text);
+            if (osType==null || OSType.Windows==osType) {
+                return String.format("\"%s\"", text);
+            }
         }
+        return text;
     }
 
     private String getKnownGitExe() {
@@ -81,7 +88,7 @@ public class GitExecutor {
             }
         }
 
-        return command==null ? null : quoteString(command);
+        return command==null ? null : quoteString(command, OS_TYPE);
     }
 
     private Path getScriptPath(String script) {
@@ -175,7 +182,7 @@ public class GitExecutor {
         }
 
         if (forceDirectory && null!=directory && null!=getScript()) {
-            return quoteString(getScript().toString());
+            return quoteString(getScript().toString(), OS_TYPE);
         }
         else {
             return gitExe;
@@ -185,7 +192,7 @@ public class GitExecutor {
     public List<String> getExecArgs() {
         List<String> execArgs = new ArrayList<>();
         if (forceDirectory && null!=directory && null!=getScript()) {
-            execArgs.add(quoteString(directory.toString()));
+            execArgs.add(quoteString(directory.toString(), OS_TYPE));
             execArgs.add(getGitExe());
         }
 
@@ -203,7 +210,6 @@ public class GitExecutor {
     public String getCommand() {
         String executable = getExecutable();
         final String DELIM=" ";
-        Function<String, String> quoter = ___text -> String.format("\"%s\"", ___text);
 
         if (null==executable) {
             return null;

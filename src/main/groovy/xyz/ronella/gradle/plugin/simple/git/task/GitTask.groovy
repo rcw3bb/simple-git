@@ -23,6 +23,9 @@ class GitTask extends DefaultTask {
     @Internal
     protected String[] internalArgs = []
 
+    @Internal
+    protected OSType osType
+
     private File directory
 
     @Input
@@ -35,6 +38,7 @@ class GitTask extends DefaultTask {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
         group = 'Simple Git'
         description = 'Execute git command.'
+        osType = GitExecutor.OS_TYPE
         directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
     }
 
