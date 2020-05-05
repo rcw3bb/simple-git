@@ -2,6 +2,7 @@ package xyz.ronella.gradle.plugin.simple.git.task
 
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
 
@@ -40,7 +41,7 @@ class GitDeleteBranch extends GitBranch {
         initFields()
 
         if (branch) {
-            def quotedBranch="\"${branch}\""
+            def quotedBranch= GitExecutor.quoteString(branch, osType)
             def argsToClean = newArgs.toList()
 
             argsToClean.removeIf({___arg -> quotedBranch==___arg})

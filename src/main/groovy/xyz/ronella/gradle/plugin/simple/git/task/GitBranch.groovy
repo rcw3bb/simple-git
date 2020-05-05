@@ -2,6 +2,7 @@ package xyz.ronella.gradle.plugin.simple.git.task
 
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
 
@@ -42,7 +43,7 @@ class GitBranch extends GitTask {
         initFields()
 
         if (branch) {
-            newArgs += "\"${branch}\""
+            newArgs += GitExecutor.quoteString(branch, osType)
         }
 
         if (!newArgs) {
