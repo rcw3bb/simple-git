@@ -10,9 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * The actual assembler of the git command to execute.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 public class GitExecutor {
 
     public final static OSType OS_TYPE = OSType.identify();

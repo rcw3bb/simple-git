@@ -4,6 +4,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import xyz.ronella.gradle.plugin.simple.git.task.*
 
+/**
+ * The entry point of the plugin.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 class SimpleGitPlugin implements Plugin<Project> {
 
     @Override

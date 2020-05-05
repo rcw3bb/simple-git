@@ -4,7 +4,7 @@ package xyz.ronella.gradle.plugin.simple.git;
  * The enumerator that identifies the OSType.
  *
  * @author Ron Webb
- * @since 2020-04-11
+ * @since 2020-05-05
  */
 public enum OSType {
     Windows,

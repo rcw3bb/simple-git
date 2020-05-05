@@ -6,6 +6,12 @@ import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
 
+/**
+ * A convenience git task for branch command for deletion.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 class GitDeleteBranch extends GitBranch {
 
     private boolean force
@@ -14,11 +20,20 @@ class GitDeleteBranch extends GitBranch {
         super()
     }
 
+    /**
+     * Indicates force deletion of the branch if true.
+     *
+     * @return Returns true of force deletion of the branch.
+     */
     @Optional @Input
     boolean getForce() {
         return force
     }
 
+    /**
+     * Captures if force deletion must be performed.
+     * @param force Set to true to force branch deletion locally.
+     */
     void setForce(boolean force) {
         this.force = force
     }

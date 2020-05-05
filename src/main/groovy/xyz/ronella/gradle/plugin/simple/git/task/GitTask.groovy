@@ -12,36 +12,54 @@ import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import java.nio.file.Path
 import java.util.stream.Collectors
 
+/**
+ * The git task that can execute any git command that you can do in console.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 class GitTask extends DefaultTask {
 
+    /**
+     * Force the execute the git command inside a directory.
+     */
     @Optional @Input
     protected boolean forceDirectory = true
 
+    /**
+     * The options added before the git command.
+     */
     @Optional @Input
     String[] options = []
-
-    @Internal
-    protected String[] internalArgs = []
 
     @Internal
     protected OSType osType
 
     private File directory
 
+    /**
+     * The git command to execute.
+     */
     @Input
     String command = ''
 
+    /**
+     * The arguments for the git command.
+     */
     @Input
     String[] args = []
 
     public GitTask() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
         group = 'Simple Git'
         description = 'Execute git command.'
         osType = GitExecutor.OS_TYPE
-        directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
     }
 
+    /**
+     * The directory where the git command must be executed.
+     *
+     * @return The instance of File pointing to where to execute the git command.
+     */
     @Optional @Input
     File getDirectory() {
         return directory
@@ -51,8 +69,11 @@ class GitTask extends DefaultTask {
         this.directory = directory
     }
 
+    /**
+     * Initialized fields based on command line parameters.
+     */
     public def initFields() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
 
         if (project.hasProperty('sg_directory')) {
             directory = new File((project.sg_directory as String).trim())
@@ -79,8 +100,13 @@ class GitTask extends DefaultTask {
         }
     }
 
+    /**
+     * Assemble all the arguments for the git command.
+     *
+     * @return An array of arguments for the git command.
+     */
     public String[] getAllArgs() {
-        String[] newArgs = internalArgs + args
+        String[] newArgs = args
 
         return (command.length()>0 || newArgs.length > 0) ? newArgs : ['--help']
     }
@@ -126,6 +152,11 @@ class GitTask extends DefaultTask {
         return null
     }
 
+    /**
+     * Build and instance of GitExecutor.
+     *
+     * @return An instance of GitExecutor.
+     */
     public GitExecutor getExecutor() {
         def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
@@ -142,9 +173,16 @@ class GitTask extends DefaultTask {
         return builder.build()
     }
 
+    /**
+     * The main action logic of the task.
+     */
     @TaskAction
     def executeCommand() {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+
+        if (directory==null) {
+            directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
+        }
 
         initFields()
 

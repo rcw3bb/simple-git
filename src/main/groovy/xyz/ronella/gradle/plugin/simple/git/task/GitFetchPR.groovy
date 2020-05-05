@@ -7,6 +7,12 @@ import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingPullRequestException
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingRemoteException
 
+/**
+ * A convenience git task for fetching a pull request.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 class GitFetchPR extends GitTask {
 
     private String remote
@@ -18,20 +24,37 @@ class GitFetchPR extends GitTask {
         forceDirectory = true
     }
 
+    /**
+     * The pull request ID to be fetched.
+     * @return The pull request ID.
+     */
     @Optional @Input
     long getPullRequest() {
         return pullRequest
     }
 
+    /**
+     * Captures the pull request id to be fetched.
+     * @param pullRequest The pull request ID.
+     */
     void setPullRequest(long pullRequest) {
         this.pullRequest = pullRequest
     }
 
+    /**
+     * The remote from where to fetch the pull request ID.
+     *
+     * @return The name of the remote.
+     */
     @Optional @Input
     String getRemote() {
         return remote
     }
 
+    /**
+     * Captures the remote from where to fetch the pull request ID
+     * @param remote The name of the remote.
+     */
     void setRemote(String remote) {
         this.remote = remote
     }

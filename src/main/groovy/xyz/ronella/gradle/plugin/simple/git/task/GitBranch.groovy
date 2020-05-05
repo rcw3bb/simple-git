@@ -6,6 +6,12 @@ import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
 
+/**
+ * A convenience git task for branch command.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 class GitBranch extends GitTask {
 
     private String branch
@@ -16,11 +22,21 @@ class GitBranch extends GitTask {
         forceDirectory = true
     }
 
+    /**
+     * The name of the branch to act on.
+     *
+     * @return A branch name.
+     */
     @Optional @Input
     String getBranch() {
         return branch
     }
 
+    /**
+     * Captures the branch name.
+     *
+     * @param branch The branch name.
+     */
     void setBranch(String branch) {
         this.branch = branch
     }

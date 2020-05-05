@@ -3,10 +3,15 @@ package xyz.ronella.gradle.plugin.simple.git.task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
-import xyz.ronella.gradle.plugin.simple.git.OSType
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingRepositoryException
 
+/**
+ * A convenience git task for branch clone.
+ *
+ * @author Ron Webb
+ * @since 2020-05-05
+ */
 class GitClone extends GitTask {
 
     private String branch
@@ -33,20 +38,39 @@ class GitClone extends GitTask {
         }
     }
 
+    /**
+     * The branch to clone.
+     *
+     * @return The branch name.
+     */
     @Optional @Input
     String getBranch() {
         return branch
     }
 
+    /**
+     * Captures the branch name.
+     *
+     * @param branch The branch name.
+     */
     void setBranch(String branch) {
         this.branch = branch
     }
 
+    /**
+     * The repository to clone.
+     *
+     * @return The repository address.
+     */
     @Optional @Input
     String getRepository() {
         return repository
     }
 
+    /**
+     * Captures the repository to clone.
+     * @param repository The repository address.
+     */
     void setRepository(String repository) {
         this.repository = repository
     }
