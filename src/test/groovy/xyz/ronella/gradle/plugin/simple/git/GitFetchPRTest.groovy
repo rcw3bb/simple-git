@@ -50,6 +50,7 @@ class GitFetchPRTest {
         gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
 
+        gitTask.executeCommand()
         def executor = gitTask.executor
         def gitExe = executor.gitExe
         def cmd = executor.command

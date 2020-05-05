@@ -160,10 +160,6 @@ class GitTask extends DefaultTask {
     public GitExecutor getExecutor() {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
 
-        if (directory==null) {
-            directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
-        }
-
         def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
 
@@ -179,6 +175,16 @@ class GitTask extends DefaultTask {
         return builder.build()
     }
 
+    private def initCommand() {
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+
+        if (directory==null) {
+            directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
+        }
+
+        initFields()
+    }
+
     /**
      * The main action logic of the task.
      */
@@ -186,7 +192,7 @@ class GitTask extends DefaultTask {
     def executeCommand() {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
 
-        initFields()
+        initCommand()
 
         def executor = getExecutor()
         executor.execute { context ->
