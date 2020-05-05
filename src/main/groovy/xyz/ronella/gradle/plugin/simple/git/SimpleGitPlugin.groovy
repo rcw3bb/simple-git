@@ -16,5 +16,6 @@ class SimpleGitPlugin implements Plugin<Project> {
         project.task('gitCheckout', type: GitCheckout)
         project.task('gitBranch', type: GitBranch)
         project.task('gitDeleteBranch', type: GitDeleteBranch)
+        project.task('gitPull', type: GitPull)
     }
 }
