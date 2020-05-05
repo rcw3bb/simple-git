@@ -62,7 +62,7 @@ class GitTask extends DefaultTask {
      */
     @Optional @Input
     File getDirectory() {
-        return directory
+        return this.directory
     }
 
     void setDirectory(File directory) {
@@ -158,6 +158,12 @@ class GitTask extends DefaultTask {
      * @return An instance of GitExecutor.
      */
     public GitExecutor getExecutor() {
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+
+        if (directory==null) {
+            directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
+        }
+
         def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
 
@@ -179,10 +185,6 @@ class GitTask extends DefaultTask {
     @TaskAction
     def executeCommand() {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
-
-        if (directory==null) {
-            directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
-        }
 
         initFields()
 

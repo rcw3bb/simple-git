@@ -120,7 +120,7 @@ public class GitExecutor {
     }
 
     public Path getScript() {
-        return getScriptPath(IScript.getInstance(OSType.identify()).getScript());
+        return getScriptPath(IScript.getInstance(OS_TYPE).getScript());
     }
 
     public Path getDirectory() {
