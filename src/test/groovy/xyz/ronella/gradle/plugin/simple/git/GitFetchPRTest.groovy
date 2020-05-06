@@ -57,6 +57,6 @@ class GitFetchPRTest {
         def script = executor.script.toString()
         def directory = executor.directory.toString()
 
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/1/head:pr-1".toString(), cmd)
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/${pullRequest}/head:pr-${pullRequest}".toString(), cmd)
     }
 }

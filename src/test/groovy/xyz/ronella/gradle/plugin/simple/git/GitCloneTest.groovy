@@ -89,7 +89,7 @@ class GitCloneTest {
         def gitExe = executor.gitExe
         def cmd = executor.command
 
-        assertEquals("${gitExe} clone -c dummy --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
+        assertEquals("${gitExe} clone -c dummy --branch \"master\" \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
     @Test
@@ -106,7 +106,7 @@ class GitCloneTest {
         def gitExe = executor.gitExe
         def cmd = executor.command
 
-        assertEquals("${gitExe} -c dummy clone --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
+        assertEquals("${gitExe} -c dummy clone --branch \"master\" \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
 }

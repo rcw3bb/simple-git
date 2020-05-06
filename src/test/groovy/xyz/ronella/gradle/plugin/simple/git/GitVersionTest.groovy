@@ -45,8 +45,6 @@ class GitVersionTest {
         def executor = gitTask.executor
         def gitExe = executor.gitExe
         def cmd = executor.command
-        def script = executor.script.toString()
-        def directory = executor.directory.toString()
 
         assertEquals("${gitExe} --version".toString(), cmd)
     }
