@@ -1,32 +1,211 @@
-# Gradle Plugin Template
+# Simple Git Gradle Plugin
 
-A basic gradle project for gosu library development.
+The plugin that allows you access to git commands inside gradle as task.
 
-## Usage
+# Pre-requisite
 
-1. **Clone** this repository to your local.
+* Java 8 (Minimum)
+* Windows/Linux
+* Git Application
 
-2. **Remove** the **.git folder** from where you've cloned the repository.
+## Plugging in the simple-git
 
-3. **Run** the following command:
+In your **build.gradle** file add the following plugin:
 
-   ```
-   gradlew test
-   ```
+```groovy
+plugins {
+    id "simple-git" version "1.0.0"
+}
+```
 
-   > If it completes successfully, your clone is all good. 
-   >
-   > Visit the **[build](BUILD.md) documentation** if you need the update the **repositories configuration** in **build.gradle file**.
-   
-4. **Update** the **group** *(i.e. defaulted to xyz.ronella.gradle.plugin)* field in the **build.gradle file** that corresponds to your library.
+> A **Simple Git tasks** group will be added to the available tasks at your disposal. You can use the following command to see them:
+>
+> ```
+> gradlew tasks --group "Simple Git"
+> ```
+>
+> Expect to see the available tasks like the following:
+>
+> ```
+> Simple Git tasks
+> ----------------
+> gitBranch - A convenience git branch command.
+> gitCheckout - A convenience git checkout command.
+> gitCheckoutMaster - A convenience git checkout command.
+> gitCheckoutPR1 - A convenience git checkout command.
+> gitClone - A convenience git clone command.
+> gitDeleteBranch - A convenience git branch command for deletion.
+> gitDeletePR - A convenience git branch command for deletion.
+> gitFetchPR - A convenience git fetch command for targeting a pull request.
+> gitPull - A convenience git pull command.
+> gitStatus - A convenience git status command.
+> gitTask - Execute a git command.
+> ```
 
-5. **Replace all** the mentions of **template-gradle-plugin** to the name of **your library name**.
+## GIT_HOME Environment Variable
 
-6. **Update** all mentions of **template** and **TBD** appropriately.
+The first location that the plugin will try to look for the **git executable** will be the location set by **GIT_HOME** environment variable. If the plugin cannot detect the location of the installed **git application**, it is advisable to set this variable to the correct directory where the git executable lives.
 
-7. **Update** all the **package names** to have your **library's package structure**.
+## Plugin Properties
 
-8. **Start coding** your **plugin**.
+| Property | Description | Type | Default |
+|-----|------|------|-----|
+| simple_git.directory | Tells the plugin what is the default git application directory it will work on. | File | *The plugin project directory* |
+| simple_git.noop | This is like the verbose property with the addition of not running the git command. This is good for debugging. | boolean | false |
+| simple_git.verbose | The plugin will to display more information on the console *(e.g. the actual git command being run)*. | boolean | false |
+
+## The forceDirectory task property
+
+The git command is normally performed inside a **git project directory** *(e.g. git status)*. Hence, there's no need to specify the directory. The **forceDirectory**, will ensure that the **git command** will be performed inside a git project directory *(i.e. directory with **.git** directory)*. Since most of the git command requires that it must be executed in this directory, **the forceDirectory is defaulted to true**.  However, it will only take effect if the **directory property is not null**.
+
+For convenience, you can set the **simple_git.directory** to your target git application directory *(e.g. project.projectDir)* and have a peace of mind that you are executing the git command in that directory.
+
+## General Syntax
+
+```
+<GIT_EXECUTABLE> <GIT_OPTIONS> <GIT_COMMAND> <GIT_ARGUMENTS>
+```
+
+| Token | Description | Task Property | Gradle Command Line Argument | Type |
+|------|------|------|--------|------|
+| GIT_EXECUTABLE | The detected git executable by the plugin. |  |  | |
+| GIT_OPTIONS | The options for running the command. This is normally use for setting inline configuration before running the git command. | options | sg_options | String[] |
+| GIT_COMMAND | The git command to be executed | command | sg_command | String |
+| GIT_ARGUMENTS | The arguments for the git command. | args | sg_args | String[] |
+
+> All these task properties *(i.e. options, command and args)* are always available to all the tasks *(i.e. including the convience tasks)*.
+>
+> The **String[]** in the command line will be all the values delimited by comma assigned to an argument *(e.g. -P**sg_args**=**-D,pr-2**)*
+
+#### Example
+
+```
+git -c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks branch -D pr-2
+```
+
+| Token          | Value                                                        |
+| -------------- | ------------------------------------------------------------ |
+| GIT_EXECUTABLE | git                                                          |
+| GIT_OPTIONS    | -c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks |
+| GIT_COMMAND    | branch                                                       |
+| GIT_ARGUMENTS  | -D pr-2                                                      |
+
+## Using gitTask
+
+All the member tasks of **Simple Git** group is a child for **gitTask**. The **child task** normally just have a default command and/or arguments *(e.g. **gitStatus** task has **status as the command**)*. 
+
+Whatever you can do with the **git command** in console you can do it in gradle with this task. 
+
+| Task Name | Task Property  | Gradle Command Line Argument | Type     |
+| --------- | -------------- | ---------------------------- | -------- |
+| gitTask   | args           | sg_args                      | String[] |
+|           | command        | sg_command                   | String   |
+|           | directory      | sg_directory                 | String   |
+|           | options        | sg_options                   | String[] |
+
+#### Example
+
+Translate the following **git clone command** into a task in gradle:
+
+```
+git clone https://github.com/rcw3bb/simple-git.git C:\tmp\simple-git
+```
+
+**Use the task itself using the following:**
+
+```groovy
+gitTask {
+  forceDirectory = false//Just directly use the git executable. 
+  command = 'clone' //Git Command
+  args = ['https://github.com/rcw3bb/simple-git.git', 
+          'C:\\tmp\\simple-git'] //The git command arguments
+}
+```
+
+**Use the child task gitClone with the following:**
+
+```groovy
+gitClone {
+  repository = 'https://github.com/rcw3bb/simple-git.git'
+  directory = new File('C:\\tmp\\simple-git')
+}
+```
+
+> You don't need to set the **command property** because it was already preset with **clone**.
+
+**Create your own task of type GitTask like the following:**
+
+```groovy
+task cloneSimpleGitByGitTask(type: GitTask) {
+  forceDirectory = false//Just directly use the git executable. 
+  command = 'clone' //Git Command
+  args = ['https://github.com/rcw3bb/simple-git.git', 
+          'C:\\tmp\\simple-git'] //The git command arguments
+}
+```
+
+> To use **GitTask class** as the type of your task, you must add the following at the top of your **build.gradle** file:
+>
+> ```
+> import xyz.ronella.gradle.plugin.simple.git.task.*
+> ```
+>
+> Note: Each **default simple git tasks** has equivalent class file. The class file has the prefix **Git** instead of **git** of the normal gradle task *(e.g. **gitClone** gradle task has an equivalent class of **GitClone**)*.
+
+**Create your own task of type GitClone for convenience like the following:**
+
+``` groovy
+task cloneSimpleGit(type: GitClone ) {
+  repository = 'https://github.com/rcw3bb/simple-git.git'
+  directory = new File('C:\\tmp\\simple-git')
+}
+```
+
+> You don't need to set the **command property** because it was already preset with **clone**.
+>
+
+## Sample build.gradle File
+
+``` groovy
+plugins {
+  id "simple-git "1.0.0"
+}
+
+gitClone {
+  repository = 'https://github.com/rcw3bb/simple-git.git'
+  directory = new File('C:\\tmp\\simple-git')
+}
+```
+## Convenience Tasks and Their Task Properties
+
+| Task Name       | Task Property | Gradle Command Line Argument | Type    |
+| --------------- | ------------- | ------ | ------- |
+| gitBranch       | branch        | sg_branch |String  |
+|        | directory        | sg_directory |String  |
+| gitCheckout     | directory | sg_directory ||
+| gitClone        | branch        | sg_branch |String  |
+|                 | directory    | sg_directory |String  |
+|                 | repository    | sg_repository |String  |
+| gitDeleteBranch | branch        | sg_branch |String  |
+|                 | directory         | sg_directory | String |
+|                 | force         | sg_force | boolean |
+| gitFetchPR     | directory | sg_directory |String  |
+|      | remote        | sg_remote |String  |
+|                 | pullRequest   | sg_pull_request |long    |
+| gitPull         | directory | sg_directory | String |
+| gitStatus      | directory | sg_directory | String |
+
+> The **options** and **args** tasks properties are always available.
+>
+> The **directory** property must be a valid **git application directory** except for the **gitClone task**.
+
+## Using the Git Task in Gradle Command Line
+
+All the available tasks in simple git can be run with gradle command.  The git clone command sample above will be like:
+
+```
+gradle gitClone -Psg_repository=https://github.com/rcw3bb/simple-git.git -Psg_directory=C:\tmp\simple-git
+```
 
 ## License
 

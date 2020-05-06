@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 : TBD
+## 1.0.0 : 2020-05-06
 
 ### Initial Version
 
