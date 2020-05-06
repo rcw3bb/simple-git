@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "xyz.ronella.simple-git" version "1.0.0"
+    id "xyz.ronella.simple-git" version "1.1.0"
 }
 ```
 
@@ -31,15 +31,13 @@ plugins {
 > ----------------
 > gitBranch - A convenience git branch command.
 > gitCheckout - A convenience git checkout command.
-> gitCheckoutMaster - A convenience git checkout command.
-> gitCheckoutPR1 - A convenience git checkout command.
 > gitClone - A convenience git clone command.
 > gitDeleteBranch - A convenience git branch command for deletion.
-> gitDeletePR - A convenience git branch command for deletion.
 > gitFetchPR - A convenience git fetch command for targeting a pull request.
 > gitPull - A convenience git pull command.
 > gitStatus - A convenience git status command.
 > gitTask - Execute a git command.
+> gitVersion - A convenience git --version command.
 > ```
 
 ## GIT_HOME Environment Variable
@@ -168,7 +166,7 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git "1.0.0"
+  id "xyz.ronella.simple-git "1.1.0"
 }
 
 gitClone {
@@ -194,6 +192,7 @@ gitClone {
 |                 | pullRequest   | sg_pull_request |long    |
 | gitPull         | directory | sg_directory | String |
 | gitStatus      | directory | sg_directory | String |
+| gitVersion |  |  |  |
 
 > The **options** and **args** tasks properties are always available.
 >
