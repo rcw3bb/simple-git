@@ -25,7 +25,7 @@ class GitTask extends DefaultTask {
      * Force the execute the git command inside a directory.
      */
     @Optional @Input
-    protected boolean forceDirectory = true
+    boolean forceDirectory = true
 
     /**
      * The options added before the git command.
@@ -159,8 +159,6 @@ class GitTask extends DefaultTask {
      * @return An instance of GitExecutor.
      */
     public GitExecutor getExecutor() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
-
         def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
 
