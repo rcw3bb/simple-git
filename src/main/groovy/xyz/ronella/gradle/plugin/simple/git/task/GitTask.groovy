@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 import xyz.ronella.gradle.plugin.simple.git.OSType
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
+import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
 
 import java.nio.file.Path
 import java.util.stream.Collectors
@@ -191,12 +192,15 @@ class GitTask extends DefaultTask {
     @TaskAction
     def executeCommand() {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+        SimpleGitPluginTestExtension pluginTestExt = project.extensions.simple_git_test;
 
         initCommand()
 
         def executor = getExecutor()
         executor.execute { context ->
-            if (context.gitExe!=null) {
+            def gitExecutable = pluginTestExt.no_git_installed ? null : context.gitExe
+
+            if (gitExecutable!=null) {
                 String[] fullCommand = [context.command]
                 Path scriptFile = context.script
                 pluginExt.writeln("Script: " + scriptFile.toString())
@@ -215,7 +219,9 @@ class GitTask extends DefaultTask {
                 }
             }
             else {
-                println("${GitExecutor.GIT_EXE} not found.")
+                String message = "${GitExecutor.GIT_EXE} not found. Please install git application and try again."
+                pluginTestExt.test_message = message
+                println(message)
             }
         }
     }

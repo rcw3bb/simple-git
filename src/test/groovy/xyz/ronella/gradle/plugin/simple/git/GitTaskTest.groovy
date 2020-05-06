@@ -43,4 +43,17 @@ class GitTaskTest {
         assertTrue(project.extensions.simple_git.noop)
     }
 
+    @Test
+    public void testNoGitInstalled() {
+
+        def gitTask = project.tasks.gitTask
+        project.extensions.simple_git.noop = false
+        def testExt = project.extensions.simple_git_test
+        testExt.no_git_installed = true
+
+        gitTask.executeCommand()
+
+        assertEquals("git.exe not found. Please install git application and try again.", testExt.test_message)
+    }
+
 }

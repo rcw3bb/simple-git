@@ -15,6 +15,7 @@ class SimpleGitPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.extensions.create('simple_git', SimpleGitPluginExtension)
+        project.extensions.create('simple_git_test', SimpleGitPluginTestExtension)
         project.task('gitTask', type: GitTask)
         project.task('gitClone', type: GitClone)
         project.task('gitStatus', type: GitStatus)
