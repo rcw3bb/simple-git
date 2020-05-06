@@ -52,7 +52,7 @@ class GitTask extends DefaultTask {
 
     public GitTask() {
         group = 'Simple Git'
-        description = 'Execute git command.'
+        description = 'Execute a git command.'
         osType = GitExecutor.OS_TYPE
     }
 

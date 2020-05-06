@@ -18,6 +18,7 @@ class GitBranch extends GitTask {
 
     public GitBranch() {
         super()
+        description = 'A convenience git branch command.'
         command = 'branch'
         forceDirectory = true
     }

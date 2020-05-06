@@ -19,6 +19,7 @@ class GitClone extends GitTask {
 
     public GitClone() {
         super()
+        description = 'A convenience git clone command.'
         command = 'clone'
         forceDirectory = false
     }

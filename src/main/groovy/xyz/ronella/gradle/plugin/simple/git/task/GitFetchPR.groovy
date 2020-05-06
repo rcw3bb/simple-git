@@ -20,6 +20,7 @@ class GitFetchPR extends GitTask {
 
     public GitFetchPR() {
         super()
+        description = 'A convenience git fetch command for targeting a pull request.'
         command = 'fetch'
         forceDirectory = true
     }

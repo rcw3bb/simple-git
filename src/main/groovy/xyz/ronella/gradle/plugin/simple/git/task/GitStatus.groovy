@@ -10,6 +10,7 @@ class GitStatus extends GitTask {
 
     public GitStatus() {
         super()
+        description = 'A convenience git status command.'
         command = 'status'
         forceDirectory = true
     }

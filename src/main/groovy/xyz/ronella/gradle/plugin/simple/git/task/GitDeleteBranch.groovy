@@ -18,6 +18,7 @@ class GitDeleteBranch extends GitBranch {
 
     public GitDeleteBranch() {
         super()
+        description = 'A convenience git branch command for deletion.'
     }
 
     /**

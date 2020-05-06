@@ -20,8 +20,14 @@ import java.util.function.Supplier;
  */
 public class GitExecutor {
 
+    /**
+     * Holds the OS Type
+     */
     public final static OSType OS_TYPE = OSType.identify();
 
+    /**
+     * Holds the git executable.
+     */
     public final static String GIT_EXE = IExecutable.getInstance(OS_TYPE).getExecutable();
 
     private final List<String> args;
@@ -49,10 +55,24 @@ public class GitExecutor {
         return null;
     }
 
+    /**
+     * A utility for quoting a string.
+     *
+     * @param text The text to quote.
+     * @return A quoted string.
+     */
     public static String quoteString(String text) {
         return quoteString(text, null);
     }
 
+    /**
+     * A utility for quoting a string based on os type.
+     * Thus the return value is not necessary a quoted text.
+     *
+     * @param text The text to quote.
+     * @param osType The os type.
+     * @return A quoted string.
+     */
     public static String quoteString(String text, OSType osType) {
         if (text==null) {
             return null;
@@ -78,6 +98,11 @@ public class GitExecutor {
         return getProgramFile(programFile);
     }
 
+    /**
+     * Provides the git executable.
+     *
+     * @return The git executable.
+     */
     public String getGitExe() {
         List<Supplier<String>> finder = Arrays.asList(
             this::getGitExeByEnvVar,
@@ -119,14 +144,27 @@ public class GitExecutor {
         return outputScript;
     }
 
+    /**
+     * Provides the script to use to force in directory execution.
+     * @return The path of the script.
+     */
     public Path getScript() {
         return getScriptPath(IScript.getInstance(OS_TYPE).getScript());
     }
 
+    /**
+     * The directory to run the git command.
+     * @return The directory to run the git command.
+     */
     public Path getDirectory() {
         return directory;
     }
 
+    /**
+     * Must hold the execute logic based on the context provided.
+     *
+     * @param logic The executed logic with context.
+     */
     public void execute(Consumer<IContext> logic) {
         logic.accept(new IContext() {
             @Override
@@ -171,14 +209,27 @@ public class GitExecutor {
         });
     }
 
+    /**
+     * The git command arguments.
+     *
+     * @return An array of arguments.
+     */
     public List<String> getArgs() {
         return new ArrayList<>(args);
     }
 
+    /**
+     * The options before the git command.
+     * @return An array of options.
+     */
     public List<String> getOpts() {
         return new ArrayList<>(opts);
     }
 
+    /**
+     * The executable to be used in task exec.
+     * @return The executable name.
+     */
     public String getExecutable() {
         String gitExe = getGitExe();
 
@@ -194,6 +245,11 @@ public class GitExecutor {
         }
     }
 
+    /**
+     * The arguments for the executable.
+     *
+     * @return An array of executable args.
+     */
     public List<String> getExecArgs() {
         List<String> execArgs = new ArrayList<>();
         if (forceDirectory && null!=directory && null!=getScript()) {
@@ -212,6 +268,11 @@ public class GitExecutor {
         return execArgs;
     }
 
+    /**
+     * The full command that will be executed.
+     *
+     * @return The full command.
+     */
     public String getCommand() {
         String executable = getExecutable();
         final String DELIM=" ";
@@ -277,6 +338,11 @@ public class GitExecutor {
         }
     }
 
+    /**
+     * The builder of the GitExecutor
+     *
+     * @return An instance of GitExecutorBuilder.
+     */
     public static GitExecutorBuilder getBuilder() {
         return new GitExecutorBuilder();
     }

@@ -10,6 +10,7 @@ class GitPull extends GitTask {
 
     public GitPull() {
         super()
+        description = 'A convenience git pull command.'
         command = 'pull'
         forceDirectory = true
     }

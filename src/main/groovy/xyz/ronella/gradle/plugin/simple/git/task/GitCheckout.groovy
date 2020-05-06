@@ -10,6 +10,7 @@ class GitCheckout extends GitBranch {
 
     public GitCheckout() {
         super()
+        description = 'A convenience git checkout command.'
         command = 'checkout'
         forceDirectory = true
     }
