@@ -17,7 +17,7 @@ class GitFetchPRTest {
     @BeforeEach
     public void initProject() {
         project = ProjectBuilder.builder().build()
-        project.pluginManager.apply 'simple-git'
+        project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
         project.extensions.simple_git.noop = true
     }
@@ -57,6 +57,6 @@ class GitFetchPRTest {
         def script = executor.script.toString()
         def directory = executor.directory.toString()
 
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"${gitTask.remote}\" pull/${pullRequest}/head:pr-${pullRequest}".toString(), cmd)
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/1/head:pr-1".toString(), cmd)
     }
 }

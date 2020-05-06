@@ -14,7 +14,7 @@ class GitStatusTest {
     @BeforeEach
     public void initProject() {
         project = ProjectBuilder.builder().build()
-        project.pluginManager.apply 'simple-git'
+        project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
         project.extensions.simple_git.noop = true
     }
@@ -48,6 +48,6 @@ class GitStatusTest {
         def script = executor.script.toString()
         def directory = executor.directory.toString()
 
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} status".toString(), cmd)
+        assertEquals("\"${script}\" \"D:\\dev\\tmp\\simple-git\" ${gitExe} status".toString(), cmd)
     }
 }

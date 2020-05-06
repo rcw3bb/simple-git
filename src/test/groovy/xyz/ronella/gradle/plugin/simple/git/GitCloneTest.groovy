@@ -16,7 +16,7 @@ class GitCloneTest {
     @BeforeEach
     public void initProject() {
         project = ProjectBuilder.builder().build()
-        project.pluginManager.apply 'simple-git'
+        project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
         project.extensions.simple_git.noop = true
     }
@@ -41,7 +41,7 @@ class GitCloneTest {
         def gitExe = executor.gitExe
         def cmd = executor.command
 
-        assertEquals("${gitExe} clone \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
+        assertEquals("${gitExe} clone \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
     @Test
@@ -56,7 +56,7 @@ class GitCloneTest {
         def gitExe = executor.gitExe
         def cmd = executor.command
 
-        assertEquals("${gitExe} clone --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
+        assertEquals("${gitExe} clone --branch \"master\" \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
     @Test
@@ -72,7 +72,7 @@ class GitCloneTest {
         def gitExe = executor.gitExe
         def cmd = executor.command
 
-        assertEquals("${gitExe} clone --branch \"${gitTask.branch}\" \"${gitTask.repository}\" \"C:\\directory\"".toString(), cmd)
+        assertEquals("${gitExe} clone --branch \"master\" \"https://git.com/dummy\" \"C:\\directory\"".toString(), cmd)
     }
 
     @Test
