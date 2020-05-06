@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "simple-git" version "1.0.0"
+    id "xyz.ronella.simple-git" version "1.0.0"
 }
 ```
 
@@ -146,7 +146,7 @@ task cloneSimpleGitByGitTask(type: GitTask) {
 
 > To use **GitTask class** as the type of your task, you must add the following at the top of your **build.gradle** file:
 >
-> ```
+> ```groovy
 > import xyz.ronella.gradle.plugin.simple.git.task.*
 > ```
 >
@@ -168,7 +168,7 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "simple-git "1.0.0"
+  id "xyz.ronella.simple-git "1.0.0"
 }
 
 gitClone {

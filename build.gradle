@@ -8,13 +8,13 @@ plugins {
 pluginBundle {
     website = 'https://github.com/rcw3bb/simple-git'
     vcsUrl = 'https://github.com/rcw3bb/simple-git'
-    tags = ['git', 'ronella']
+    tags = ['git', 'repository', 'source', 'source-control', 'versioning', 'ronella']
 }
 
 gradlePlugin {
     plugins {
         simpleGit {
-            id = 'simple-git'
+            id = 'xyz.ronella.simple-git'
             displayName = 'Simple Git Plugin'
             description = 'The plugin that allows you access to git commands inside gradle as task'
             implementationClass = 'xyz.ronella.gradle.plugin.simple.git.SimpleGitPlugin'
