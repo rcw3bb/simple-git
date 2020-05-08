@@ -166,7 +166,7 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git "1.1.0"
+  id "xyz.ronella.simple-git" "1.1.0"
 }
 
 gitClone {
