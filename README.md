@@ -205,6 +205,7 @@ Some convenience tasks supports terminal arguments *(i.e. zargs)*. This means it
 ```groovy
 gitCheckout {
   directory = new File('C:\\tmp\\simple-git')
+  args = ['-B']
   branch = 'master'
   zargs = ['--track', 'origin/master']
 }
