@@ -60,4 +60,21 @@ class GitDeleteBranchTest {
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch -D \"dummy\"".toString(), cmd)
     }
 
+    @Test
+    public void testForceDeleteZargs() {
+        def gitTask = project.tasks.gitDeleteBranch
+        gitTask.branch = 'dummy'
+        gitTask.force = true
+        gitTask.zargs += '-zargs'
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch -D \"dummy\" -zargs".toString(), cmd)
+    }
+
 }

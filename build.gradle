@@ -8,7 +8,7 @@ plugins {
 pluginBundle {
     website = 'https://github.com/rcw3bb/simple-git'
     vcsUrl = 'https://github.com/rcw3bb/simple-git'
-    tags = ['git', 'repository', 'source', 'source-control', 'versioning', 'ronella']
+    tags = ['git', 'repository', 'source', 'source-control', 'versioning', 'simple-git', 'ronella']
 }
 
 gradlePlugin {

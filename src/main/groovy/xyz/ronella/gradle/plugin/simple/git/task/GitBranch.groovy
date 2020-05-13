@@ -67,6 +67,8 @@ class GitBranch extends GitTask {
             throw new MissingBranchException()
         }
 
+        newArgs += zargs
+
         return newArgs
     }
 

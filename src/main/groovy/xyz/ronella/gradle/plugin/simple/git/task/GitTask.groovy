@@ -50,6 +50,9 @@ class GitTask extends DefaultTask {
     @Input
     String[] args = []
 
+    @Optional @Input
+    String[] zargs = []
+
     public GitTask() {
         group = 'Simple Git'
         description = 'Execute a git command.'
@@ -98,6 +101,13 @@ class GitTask extends DefaultTask {
                     .map( { ___arg -> ___arg.trim()})
                     .collect(Collectors.toList()).toArray()
             pluginExt.writeln("Found sg_args: ${args}")
+        }
+
+        if (project.hasProperty('sg_zargs')) {
+            zargs = (project.sg_zargs as String).split(",").toList().stream()
+                    .map( { ___arg -> ___arg.trim()})
+                    .collect(Collectors.toList()).toArray()
+            pluginExt.writeln("Found sg_zargs: ${zargs}")
         }
     }
 

@@ -98,6 +98,8 @@ class GitFetchPR extends GitTask {
             throw new MissingPullRequestException()
         }
 
+        newArgs += zargs
+
         return newArgs
     }
 

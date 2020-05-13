@@ -109,4 +109,22 @@ class GitCloneTest {
         assertEquals("${gitExe} -c dummy clone --branch \"master\" \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString(), cmd)
     }
 
+    @Test
+    public void testZargs() {
+        def gitTask = project.tasks.gitClone
+        gitTask.options+='-c'
+        gitTask.options+='dummy'
+        gitTask.repository="https://git.com/dummy"
+        gitTask.branch="master"
+        gitTask.zargs+='-zargs'
+
+        gitTask.executeCommand()
+
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+
+        assertEquals("${gitExe} -c dummy clone --branch \"master\" \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\" -zargs".toString(), cmd)
+    }
+
 }

@@ -96,6 +96,8 @@ class GitClone extends GitTask {
 
         newArgs += GitExecutor.quoteString(directory.absoluteFile.toString(), osType)
 
+        newArgs += zargs
+
         return newArgs
     }
 }

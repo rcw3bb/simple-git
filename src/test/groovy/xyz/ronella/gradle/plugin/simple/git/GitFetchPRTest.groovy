@@ -59,4 +59,23 @@ class GitFetchPRTest {
 
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/${pullRequest}/head:pr-${pullRequest}".toString(), cmd)
     }
+
+    @Test
+    public void testPullRequestZargs() {
+        def gitTask = project.tasks.gitFetchPR
+
+        def pullRequest = 1
+        gitTask.remote = "origin"
+        gitTask.pullRequest = pullRequest
+        gitTask.zargs+='-zargs'
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/${pullRequest}/head:pr-${pullRequest} -zargs".toString(), cmd)
+    }
 }

@@ -60,13 +60,15 @@ class GitDeleteBranch extends GitBranch {
             def quotedBranch= GitExecutor.quoteString(branch, osType)
             def argsToClean = newArgs.toList()
 
-            argsToClean.removeIf({___arg -> quotedBranch==___arg})
+            argsToClean.removeIf({___arg -> quotedBranch==___arg || zargs.contains(___arg)})
             newArgs = argsToClean.toArray()
             newArgs += [(force ? '-D' : '-d'), quotedBranch]
         }
         else {
             throw new MissingBranchException()
         }
+
+        newArgs += zargs
 
         return newArgs
     }

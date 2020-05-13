@@ -45,4 +45,21 @@ class GitBranchTest {
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch \"master\"".toString(), cmd)
 
     }
+
+    @Test
+    public void testBranchZArgs() {
+        def gitTask = project.tasks.gitBranch
+        gitTask.branch = 'master'
+        gitTask.zargs = ['-zargs']
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} branch \"master\" -zargs".toString(), cmd)
+
+    }
 }

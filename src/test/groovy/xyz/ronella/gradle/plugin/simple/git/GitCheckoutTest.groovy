@@ -62,4 +62,21 @@ class GitCheckoutTest {
 
     }
 
+    @Test
+    public void testBranchZargs() {
+        def gitTask = project.tasks.gitCheckout
+        gitTask.branch = 'master'
+        gitTask.zargs = ['-zargs']
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout \"master\" -zargs".toString(), cmd)
+
+    }
+
 }
