@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 : 2020-05-13
+
+### New
+
+* Introduce terminal arguments via **zargs**.
+
 ## 1.1.0 : 2020-05-06
 
 ### New

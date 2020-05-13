@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "xyz.ronella.simple-git" version "1.1.0"
+    id "xyz.ronella.simple-git" version "1.2.0"
 }
 ```
 
@@ -166,7 +166,7 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git" version "1.1.0"
+  id "xyz.ronella.simple-git" version "1.2.0"
 }
 
 gitClone {
@@ -176,27 +176,39 @@ gitClone {
 ```
 ## Convenience Tasks and Their Task Properties
 
-| Task Name       | Task Property | Gradle Command Line Argument | Type    |
-| --------------- | ------------- | ------ | ------- |
-| gitBranch       | branch        | sg_branch |String  |
-|        | directory        | sg_directory |String  |
-| gitCheckout     | directory | sg_directory ||
-| gitClone        | branch        | sg_branch |String  |
-|                 | directory    | sg_directory |String  |
-|                 | repository    | sg_repository |String  |
-| gitDeleteBranch | branch        | sg_branch |String  |
-|                 | directory         | sg_directory | String |
-|                 | force         | sg_force | boolean |
-| gitFetchPR     | directory | sg_directory |String  |
-|      | remote        | sg_remote |String  |
-|                 | pullRequest   | sg_pull_request |long    |
-| gitPull         | directory | sg_directory | String |
-| gitStatus      | directory | sg_directory | String |
-| gitVersion |  |  |  |
+| Task Name       | Task Property | Gradle Command Line Argument *(i.e. always of type String)* | Task Type | Support for zargs *(i.e. sg_zargs in command line)* Terminal Arguments |
+| --------------- | ------------- | ------ | ------- | ------- |
+| gitBranch       | branch        | sg_branch |String  |true  |
+|        | directory        | sg_directory |File  |  |
+| gitCheckout     | directory | sg_directory |File|true|
+| gitClone        | branch        | sg_branch |String  |true  |
+|                 | directory    | sg_directory |File  |  |
+|                 | repository    | sg_repository |String  |  |
+| gitDeleteBranch | branch        | sg_branch |String  |true  |
+|                 | directory         | sg_directory | File |  |
+|                 | force         | sg_force | boolean |  |
+| gitFetchPR     | directory | sg_directory |File  |true  |
+|      | remote        | sg_remote |String  |  |
+|                 | pullRequest   | sg_pull_request |long    |    |
+| gitPull         | directory | sg_directory | File |  |
+| gitStatus      | directory | sg_directory | File |  |
+| gitVersion |  |  |  |  |
 
 > The **options** and **args** tasks properties are always available.
 >
 > The **directory** property must be a valid **git application directory** except for the **gitClone task**.
+
+## Terminal Arguments (zargs)
+
+Some convenience tasks supports terminal arguments *(i.e. zargs)*. This means it can accepts additional arguments after their **task provided properties *(i.e. normally becomes the last arguments)***. For example for the **gitCheckout task** to also have **track argument**, will be like the following: 
+
+```groovy
+gitCheckout {
+  directory = new File('C:\\tmp\\simple-git')
+  branch = 'master'
+  zargs = ['--track', 'origin/master']
+}
+```
 
 ## Using the Git Task in Gradle Command Line
 
