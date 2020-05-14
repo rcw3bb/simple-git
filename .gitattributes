@@ -1,0 +1,12 @@
+* text=auto
+
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+*.sh text eol=lf
+
+*.exe -text
+*.png -text
+*.jpg -text
+*.pdf -text
+*.jar -text
