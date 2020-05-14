@@ -121,6 +121,18 @@ public class GitExecutor {
         return command==null ? null : quoteString(command, OS_TYPE);
     }
 
+    private void makeExecutable(String script) {
+        ProcessBuilder builder = new ProcessBuilder();
+        builder.command("chmod", "775", script);
+        try {
+            Process process = builder.start();
+            int exitCode = process.waitFor();
+            assert exitCode ==0;
+        } catch (Exception exp) {
+            throw new RuntimeException(exp);
+        }
+    }
+
     private Path getScriptPath(String script) {
         final String DEFAULT_JOIN_DELIMITER = "/";
         final String SCRIPTS_DIR = "scripts";
@@ -135,6 +147,12 @@ public class GitExecutor {
             fileScript.mkdirs();
             try (InputStream isStream = this.getClass().getClassLoader().getResourceAsStream(internalScript)) {
                 Files.copy(isStream, outputScript);
+                switch (OS_TYPE) {
+                    case Linux:
+                    case Mac:
+                        makeExecutable(outputScript.toString());
+                        break;
+                }
             }
             catch(IOException ioe){
                 throw new RuntimeException(ioe);
