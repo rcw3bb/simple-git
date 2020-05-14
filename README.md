@@ -5,7 +5,7 @@ The plugin that allows you access to git commands inside gradle as task.
 # Pre-requisite
 
 * Java 8 (Minimum)
-* Windows/Linux
+* Windows/Linux/MacOS
 * Git Application
 
 ## Plugging in the simple-git
@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "xyz.ronella.simple-git" version "1.2.0"
+    id "xyz.ronella.simple-git" version "1.3.0"
 }
 ```
 
@@ -166,12 +166,13 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git" version "1.2.0"
+  id "xyz.ronella.simple-git" version "1.3.0"
 }
+
+simple_git.directory=new File('C:\\tmp\\simple-git')
 
 gitClone {
   repository = 'https://github.com/rcw3bb/simple-git.git'
-  directory = new File('C:\\tmp\\simple-git')
 }
 ```
 ## Convenience Tasks and Their Task Properties
