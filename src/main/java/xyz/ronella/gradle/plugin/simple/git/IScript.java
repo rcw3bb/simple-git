@@ -1,6 +1,7 @@
 package xyz.ronella.gradle.plugin.simple.git;
 
 import xyz.ronella.gradle.plugin.simple.git.impl.LinuxOS;
+import xyz.ronella.gradle.plugin.simple.git.impl.MacOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.OtherOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.WindowsOS;
 
@@ -31,6 +32,8 @@ public interface IScript {
                 return new WindowsOS();
             case Linux:
                 return new LinuxOS();
+            case Mac:
+                return new MacOS();
             default:
                 return new OtherOS();
         }

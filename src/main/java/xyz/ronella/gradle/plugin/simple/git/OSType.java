@@ -9,6 +9,7 @@ package xyz.ronella.gradle.plugin.simple.git;
 public enum OSType {
     Windows,
     Linux,
+    Mac,
     Unknown;
 
     public static OSType identify() {
@@ -16,7 +17,10 @@ public enum OSType {
         if (osName.contains("win")) {
             return OSType.Windows;
         }
-        else if (osName.contains("nux")) {
+        else if (osName.contains("mac")) {
+            return OSType.Mac;
+        }
+        else if (osName.contains("nux") || osName.contains("nix") || osName.contains("aix")) {
             return OSType.Linux;
         }
         return OSType.Unknown;

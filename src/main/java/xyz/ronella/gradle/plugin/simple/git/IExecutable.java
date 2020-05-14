@@ -3,6 +3,7 @@ package xyz.ronella.gradle.plugin.simple.git;
 import xyz.ronella.gradle.plugin.simple.git.impl.LinuxOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.OtherOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.WindowsOS;
+import xyz.ronella.gradle.plugin.simple.git.impl.MacOS;
 
 /**
  * The template of identifying the actual git executable.
@@ -31,6 +32,8 @@ public interface IExecutable {
                 return new WindowsOS();
             case Linux:
                 return new LinuxOS();
+            case Mac:
+                return new MacOS();
             default:
                 return new OtherOS();
         }
