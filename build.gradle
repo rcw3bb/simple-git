@@ -3,6 +3,7 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'maven-publish'
 }
 
 pluginBundle {
@@ -18,6 +19,59 @@ gradlePlugin {
             displayName = 'Simple Git Plugin'
             description = 'The plugin that allows you access to git commands inside gradle as task'
             implementationClass = 'xyz.ronella.gradle.plugin.simple.git.SimpleGitPlugin'
+        }
+    }
+}
+
+publishing {
+    publications {
+
+        repositories.maven {
+            url "https://repo.ronella.xyz/archiva/repository/${version.toString().endsWith("SNAPSHOT") ? 'snapshots' : 'internal'}/"
+            credentials {
+                username "${archivaUsername}"
+                password "${archivaPassword}"
+            }
+        }
+
+        pluginMaven(MavenPublication) {
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+
+            pom {
+                name = 'Simple Git Plugin'
+                description = 'The plugin that allows you access to git commands inside gradle as task'
+                url = 'https://github.com/rcw3bb/simple-git'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/rcw3bb/simple-git/blob/master/LICENSE.md'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'ron'
+                        name = 'Ronaldo Webb'
+                        email = 'ron@ronella.xyz'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/rcw3bb/simple-git'
+                }
+            }
+
+            artifacts {
+                groupId 'xyz.ronella.gradle.plugin'
+                artifactId project.name
+                version version
+                artifact "./build/libs/${project.name}-${version}.jar"
+            }
         }
     }
 }
