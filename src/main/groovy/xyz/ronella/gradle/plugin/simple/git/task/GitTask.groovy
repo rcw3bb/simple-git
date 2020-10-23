@@ -188,7 +188,7 @@ class GitTask extends DefaultTask {
         SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
 
         if (directory==null) {
-            directory = pluginExt.directory==null ? project.projectDir : pluginExt.directory
+            directory = pluginExt.directory==null ? project.rootProject.rootDir : pluginExt.directory
         }
 
         initFields()
