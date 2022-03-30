@@ -39,18 +39,17 @@ abstract class GitFetchPR extends GitTask {
     abstract Property<String> getRemote()
 
     @Override
-    def initFields() {
-        super.initFields()
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
+    def initialization() {
+        super.initialization()
 
         if (project.hasProperty('sg_remote')) {
             remote.convention((project.sg_remote as String).trim())
-            pluginExt.writeln("Found sg_remote: ${remote}")
+            EXTENSION.writeln("Found sg_remote: ${remote}")
         }
 
         if (project.hasProperty('sg_pull_request')) {
             pullRequest.convention(Long.valueOf((project.sg_pull_request as String).trim()))
-            pluginExt.writeln("Found sg_pull_request: ${pullRequest}")
+            EXTENSION.writeln("Found sg_pull_request: ${pullRequest}")
         }
     }
 
@@ -58,10 +57,8 @@ abstract class GitFetchPR extends GitTask {
     ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
-        initFields()
-
         if (remote.isPresent()) {
-            newArgs.add(GitExecutor.quoteString(remote.get(), osType))
+            newArgs.add(GitExecutor.quoteString(remote.get(), OS_TYPE))
         }
         else {
             throw new MissingRemoteException()

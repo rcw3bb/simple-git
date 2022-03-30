@@ -12,8 +12,10 @@ import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
 
+import java.nio.file.Files
 import java.nio.file.Path
 import java.util.stream.Collectors
+import java.util.stream.Stream
 
 /**
  * The git task that can execute any git command that you can do in console.
@@ -35,7 +37,8 @@ abstract class GitTask extends DefaultTask {
     @Optional @Input
     abstract ListProperty<String> getOptions()
 
-    protected final OSType osType
+    protected final OSType OS_TYPE
+    protected final SimpleGitPluginExtension EXTENSION
 
     @Input @Optional
     abstract Property<File> getDirectory()
@@ -58,45 +61,52 @@ abstract class GitTask extends DefaultTask {
     GitTask() {
         group = 'Simple Git'
         description = 'Execute a git command.'
-        osType = GitExecutor.OS_TYPE
-        initCommand()
+        OS_TYPE = GitExecutor.OS_TYPE
+        EXTENSION = project.extensions.simple_git
+        command.convention("")
+        forceDirectory.convention(true)
+
+        if (!directory.isPresent()) {
+            directory.convention(!EXTENSION.directory.isPresent() ? project.rootProject.rootDir : EXTENSION.directory.get())
+        }
+
+        initialization()
     }
 
     /**
      * Initialized fields based on command line parameters.
      */
-    def initFields() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
+    def initialization() {
 
         if (project.hasProperty('sg_directory')) {
             directory.convention(new File((project.sg_directory as String)))
-            pluginExt.writeln("Found sg_directory: ${directory}")
+            EXTENSION.writeln("Found sg_directory: ${directory}")
         }
 
         if (project.hasProperty('sg_command')) {
             command.convention(new File((project.sg_command as String).trim()).absolutePath)
-            pluginExt.writeln("Found sg_command: ${command}")
+            EXTENSION.writeln("Found sg_command: ${command}")
         }
 
         if (project.hasProperty('sg_options')) {
             options.convention((project.sg_options as String).split(",").toList().stream()
                     .map( {___arg -> ___arg.trim()})
                     .collect(Collectors.toList()))
-            pluginExt.writeln("Found sg_options: ${options}")
+            EXTENSION.writeln("Found sg_options: ${options}")
         }
 
         if (project.hasProperty('sg_args')) {
             args.convention((project.sg_args as String).split(",").toList().stream()
                     .map( { ___arg -> ___arg.trim()})
                     .collect(Collectors.toList()))
-            pluginExt.writeln("Found sg_args: ${args}")
+            EXTENSION.writeln("Found sg_args: ${args}")
         }
 
         if (project.hasProperty('sg_zargs')) {
             zargs.convention((project.sg_zargs as String).split(",").toList().stream()
                     .map( { ___arg -> ___arg.trim()})
                     .collect(Collectors.toList()))
-            pluginExt.writeln("Found sg_zargs: ${zargs}")
+            EXTENSION.writeln("Found sg_zargs: ${zargs}")
         }
     }
 
@@ -184,17 +194,21 @@ abstract class GitTask extends DefaultTask {
         return builder.build()
     }
 
-    private def initCommand() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
-
-        command.convention("")
-        forceDirectory.convention(true)
-
-        if (!directory.isPresent()) {
-            directory.convention(!pluginExt.directory.isPresent() ? project.rootProject.rootDir : pluginExt.directory.get())
+    boolean directoryIsEmpty() {
+        if (directory.isPresent()) {
+            def dirFile = directory.get()
+            if (dirFile.exists()) {
+                try (Stream<Path> entries = Files.list(dirFile.toPath())) {
+                    def hasEntry = entries.findFirst().isPresent()
+                    if (hasEntry) {
+                        println("${dirFile.absolutePath} is not empty.")
+                    }
+                    return !hasEntry
+                }
+            }
         }
 
-        initFields()
+        return true
     }
 
     /**
@@ -202,7 +216,6 @@ abstract class GitTask extends DefaultTask {
      */
     @TaskAction
     def executeCommand() {
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
         SimpleGitPluginTestExtension pluginTestExt = project.extensions.simple_git_test;
 
         def executor = getExecutor()
@@ -212,11 +225,11 @@ abstract class GitTask extends DefaultTask {
             if (gitExecutable!=null) {
                 String[] fullCommand = [context.command]
                 Path scriptFile = context.script
-                pluginExt.writeln("Script: " + scriptFile.toString())
-                pluginExt.writeln("OS: ${GitExecutor.OS_TYPE}")
-                pluginExt.writeln("Command to execute: ${fullCommand.join(' ')}")
+                EXTENSION.writeln("Script: " + scriptFile.toString())
+                EXTENSION.writeln("OS: ${GitExecutor.OS_TYPE}")
+                EXTENSION.writeln("Command to execute: ${fullCommand.join(' ')}")
 
-                if (!pluginExt.noop.get()) {
+                if (!EXTENSION.noop.get()) {
                     project.exec {
                         executable context.executable
                         if (context.execArgs) {
@@ -224,7 +237,7 @@ abstract class GitTask extends DefaultTask {
                         }
                     }
                 } else {
-                    pluginExt.writeln("No-operation is activated.")
+                    EXTENSION.writeln("No-operation is activated.")
                 }
             }
             else {

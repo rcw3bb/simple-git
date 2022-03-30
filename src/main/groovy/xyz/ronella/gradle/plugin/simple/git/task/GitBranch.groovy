@@ -26,13 +26,12 @@ abstract class GitBranch extends GitTask {
     }
 
     @Override
-    def initFields() {
-        super.initFields()
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
+    def initialization() {
+        super.initialization()
 
         if (project.hasProperty('sg_branch')) {
             branch.convention((project.sg_branch as String).trim())
-            pluginExt.writeln("Found sg_branch: ${branch}")
+            EXTENSION.writeln("Found sg_branch: ${branch}")
         }
     }
 
@@ -40,10 +39,8 @@ abstract class GitBranch extends GitTask {
     ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
-        initFields()
-
         if (branch.isPresent()) {
-            newArgs.add(GitExecutor.quoteString(branch.get(), osType))
+            newArgs.add(GitExecutor.quoteString(branch.get(), OS_TYPE))
         }
 
         if (newArgs.isPresent() && newArgs.get().isEmpty()) {

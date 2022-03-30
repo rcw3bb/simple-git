@@ -25,13 +25,12 @@ abstract class GitDeleteBranch extends GitBranch {
     }
 
     @Override
-    def initFields() {
-        super.initFields()
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
+    def initialization() {
+        super.initialization()
 
         if (project.hasProperty('sg_force')) {
             force.convention(Boolean.valueOf((project.sg_force as String).trim()))
-            pluginExt.writeln("Found sg_force: ${force}")
+            EXTENSION.writeln("Found sg_force: ${force}")
         }
     }
 
@@ -39,10 +38,8 @@ abstract class GitDeleteBranch extends GitBranch {
     ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
-        initFields()
-
         if (branch.isPresent()) {
-            def quotedBranch= GitExecutor.quoteString(branch.get(), osType)
+            def quotedBranch= GitExecutor.quoteString(branch.get(), OS_TYPE)
             def argsToClean = new ArrayList<String>(newArgs.get())
 
             argsToClean.removeIf({___arg -> quotedBranch==___arg || zargs.get().contains(___arg)})
