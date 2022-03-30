@@ -6,13 +6,13 @@ package xyz.ronella.gradle.plugin.simple.git.task
  * @author Ron Webb
  * @since 2020-05-05
  */
-class GitCheckout extends GitBranch {
+abstract class GitCheckout extends GitBranch {
 
-    public GitCheckout() {
+    GitCheckout() {
         super()
         description = 'A convenience git checkout command.'
-        command = 'checkout'
-        forceDirectory = true
+        command.convention('checkout')
+        forceDirectory.convention(true)
     }
 
 }

@@ -6,11 +6,11 @@ package xyz.ronella.gradle.plugin.simple.git.task
  * @author Ron Webb
  * @since 2020-05-05
  */
-class GitVersion extends GitTask {
-    public GitVersion() {
+abstract class GitVersion extends GitTask {
+    GitVersion() {
         super()
         description = 'A convenience git --version command.'
-        args = ['--version']
-        forceDirectory = false
+        args.add('--version')
+        forceDirectory.convention(false)
     }
 }

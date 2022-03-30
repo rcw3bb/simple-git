@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test
 
 class GitBranchTest {
 
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -22,7 +22,7 @@ class GitBranchTest {
     }
 
     @Test
-    public void testNoParameters() {
+    void testNoParameters() {
         def gitTask = project.tasks.gitBranch
 
         assertThrows(MissingBranchException, {
@@ -31,7 +31,7 @@ class GitBranchTest {
     }
 
     @Test
-    public void testBranch() {
+    void testBranch() {
         def gitTask = project.tasks.gitBranch
         gitTask.branch = 'master'
 
@@ -47,7 +47,7 @@ class GitBranchTest {
     }
 
     @Test
-    public void testBranchZArgs() {
+    void testBranchZArgs() {
         def gitTask = project.tasks.gitBranch
         gitTask.branch = 'master'
         gitTask.zargs = ['-zargs']

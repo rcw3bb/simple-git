@@ -1,35 +1,37 @@
 package xyz.ronella.gradle.plugin.simple.git
 
+import org.gradle.api.provider.Property
+
 /**
  * The extension for customized the behaviour of the plugin.
  *
  * @author Ron Webb
  * @since 2020-05-05
  */
-class SimpleGitPluginExtension {
+abstract class SimpleGitPluginExtension {
 
     /**
      * Displays more information.
      */
-    public boolean verbose
+    abstract Property<Boolean> getVerbose()
 
     /**
      * It is like verbose but not execute the git command.
      */
-    public boolean noop
+    abstract Property<Boolean> getNoop()
 
     /**
      * The default directory to use if the default directory was not specified.
      */
-    public File directory
+    abstract Property<File> getDirectory()
 
-    /**
-     * A convenience method for writing more information on the console.
-     *
-     * @param text The text to write on console.
-     */
-    public void writeln(String text) {
-        if (verbose || noop) {
+    SimpleGitPluginExtension() {
+        noop.convention(false)
+        verbose.convention(false)
+    }
+
+    def writeln(String text) {
+        if (verbose.get() || noop.get()) {
             println(text)
         }
     }

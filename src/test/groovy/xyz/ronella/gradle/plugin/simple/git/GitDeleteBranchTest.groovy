@@ -10,10 +10,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GitDeleteBranchTest {
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -21,7 +21,7 @@ class GitDeleteBranchTest {
     }
 
     @Test
-    public void testNoParameters() {
+    void testNoParameters() {
         def gitTask = project.tasks.gitDeleteBranch
 
         assertThrows(MissingBranchException, {
@@ -30,7 +30,7 @@ class GitDeleteBranchTest {
     }
 
     @Test
-    public void testDeleteBranch() {
+    void testDeleteBranch() {
         def gitTask = project.tasks.gitDeleteBranch
         gitTask.branch = 'master'
 
@@ -45,7 +45,7 @@ class GitDeleteBranchTest {
     }
 
     @Test
-    public void testForceDelete() {
+    void testForceDelete() {
         def gitTask = project.tasks.gitDeleteBranch
         gitTask.branch = 'dummy'
         gitTask.force = true
@@ -61,11 +61,11 @@ class GitDeleteBranchTest {
     }
 
     @Test
-    public void testForceDeleteZargs() {
+    void testForceDeleteZargs() {
         def gitTask = project.tasks.gitDeleteBranch
         gitTask.branch = 'dummy'
         gitTask.force = true
-        gitTask.zargs += '-zargs'
+        gitTask.zargs.add('-zargs')
 
         gitTask.executeCommand()
         def executor = gitTask.executor

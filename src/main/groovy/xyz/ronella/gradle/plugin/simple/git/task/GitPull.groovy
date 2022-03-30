@@ -6,12 +6,12 @@ package xyz.ronella.gradle.plugin.simple.git.task
  * @author Ron Webb
  * @since 2020-05-05
  */
-class GitPull extends GitTask {
+abstract class GitPull extends GitTask {
 
-    public GitPull() {
+    GitPull() {
         super()
         description = 'A convenience git pull command.'
-        command = 'pull'
-        forceDirectory = true
+        command.convention('pull')
+        forceDirectory.convention(true)
     }
 }

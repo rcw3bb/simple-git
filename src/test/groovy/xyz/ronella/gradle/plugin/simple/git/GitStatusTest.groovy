@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test
 
 class GitStatusTest {
 
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -20,7 +20,7 @@ class GitStatusTest {
     }
 
     @Test
-    public void testNoParameters() {
+    void testNoParameters() {
         def gitTask = project.tasks.gitStatus
 
         gitTask.executeCommand()
@@ -35,7 +35,7 @@ class GitStatusTest {
     }
 
     @Test
-    public void testDirectory() {
+    void testDirectory() {
         def gitTask = project.tasks.gitStatus
 
         gitTask.directory=new File('D:\\dev\\tmp\\simple-git')

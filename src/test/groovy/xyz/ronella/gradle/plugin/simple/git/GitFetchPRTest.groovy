@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test
 
 class GitFetchPRTest {
 
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -23,7 +23,7 @@ class GitFetchPRTest {
     }
 
     @Test
-    public void testNoParameters() {
+    void testNoParameters() {
         def gitTask = project.tasks.gitFetchPR
 
         assertThrows(MissingRemoteException, {
@@ -32,7 +32,7 @@ class GitFetchPRTest {
     }
 
     @Test
-    public void testRemote() {
+    void testRemote() {
         def gitTask = project.tasks.gitFetchPR
 
         gitTask.remote = "origin"
@@ -43,10 +43,10 @@ class GitFetchPRTest {
     }
 
     @Test
-    public void testPullRequest() {
+    void testPullRequest() {
         def gitTask = project.tasks.gitFetchPR
 
-        def pullRequest = 1
+        def pullRequest = 1l
         gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
 
@@ -61,13 +61,13 @@ class GitFetchPRTest {
     }
 
     @Test
-    public void testPullRequestZargs() {
+    void testPullRequestZargs() {
         def gitTask = project.tasks.gitFetchPR
 
-        def pullRequest = 1
+        def pullRequest = 1l
         gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
-        gitTask.zargs+='-zargs'
+        gitTask.zargs.add('-zargs')
 
         gitTask.executeCommand()
         def executor = gitTask.executor

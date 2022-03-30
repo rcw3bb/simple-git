@@ -325,16 +325,16 @@ public class GitExecutor {
             return this;
         }
 
-        public GitExecutorBuilder addArgs(String ... args) {
+        public GitExecutorBuilder addArgs(List<String> args) {
             if (null!=args) {
-                this.args.addAll(Arrays.asList(args));
+                this.args.addAll(args);
             }
             return this;
         }
 
-        public GitExecutorBuilder addOpts(String ... opts) {
+        public GitExecutorBuilder addOpts(List<String> opts) {
             if (null!=opts) {
-                this.opts.addAll(Arrays.asList(opts));
+                this.opts.addAll(opts);
             }
             return this;
         }

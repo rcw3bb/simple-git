@@ -1,7 +1,8 @@
 package xyz.ronella.gradle.plugin.simple.git.task
 
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
@@ -12,62 +13,46 @@ import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
  * @author Ron Webb
  * @since 2020-05-05
  */
-class GitBranch extends GitTask {
+abstract class GitBranch extends GitTask {
 
-    private String branch
+    @Input
+    abstract Property<String> getBranch()
 
-    public GitBranch() {
+    GitBranch() {
         super()
         description = 'A convenience git branch command.'
-        command = 'branch'
-        forceDirectory = true
-    }
-
-    /**
-     * The name of the branch to act on.
-     *
-     * @return A branch name.
-     */
-    @Optional @Input
-    String getBranch() {
-        return branch
-    }
-
-    /**
-     * Captures the branch name.
-     *
-     * @param branch The branch name.
-     */
-    void setBranch(String branch) {
-        this.branch = branch
+        command.convention('branch')
+        forceDirectory.convention(true)
     }
 
     @Override
-    public def initFields() {
+    def initFields() {
         super.initFields()
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
 
         if (project.hasProperty('sg_branch')) {
-            branch = (project.sg_branch).trim()
+            branch.convention((project.sg_branch as String).trim())
             pluginExt.writeln("Found sg_branch: ${branch}")
         }
     }
 
     @Override
-    public String[] getAllArgs() {
-        String[] newArgs = super.getAllArgs()
+    ListProperty<String> getAllArgs() {
+        def newArgs = super.getAllArgs()
 
         initFields()
 
-        if (branch) {
-            newArgs += GitExecutor.quoteString(branch, osType)
+        if (branch.isPresent()) {
+            newArgs.add(GitExecutor.quoteString(branch.get(), osType))
         }
 
-        if (!newArgs) {
+        if (newArgs.isPresent() && newArgs.get().isEmpty()) {
             throw new MissingBranchException()
         }
 
-        newArgs += zargs
+        if (zargs.isPresent()) {
+            newArgs.addAll(zargs.get())
+        }
 
         return newArgs
     }

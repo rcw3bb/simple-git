@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test
 
 class GitCloneTest {
 
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -22,7 +22,7 @@ class GitCloneTest {
     }
 
     @Test
-    public void testNoParameters() {
+    void testNoParameters() {
         def gitTask = project.tasks.gitClone
 
         assertThrows(MissingRepositoryException, {
@@ -31,7 +31,7 @@ class GitCloneTest {
     }
 
     @Test
-    public void testRepository() {
+    void testRepository() {
         def gitTask = project.tasks.gitClone
         gitTask.repository="https://git.com/dummy"
 
@@ -45,7 +45,7 @@ class GitCloneTest {
     }
 
     @Test
-    public void testBranchRepository() {
+    void testBranchRepository() {
         def gitTask = project.tasks.gitClone
         gitTask.repository="https://git.com/dummy"
         gitTask.branch="master"
@@ -60,7 +60,7 @@ class GitCloneTest {
     }
 
     @Test
-    public void testDirectory() {
+    void testDirectory() {
         def gitTask = project.tasks.gitClone
         gitTask.repository="https://git.com/dummy"
         gitTask.branch="master"
@@ -76,10 +76,10 @@ class GitCloneTest {
     }
 
     @Test
-    public void testArgs() {
+    void testArgs() {
         def gitTask = project.tasks.gitClone
-        gitTask.args+='-c'
-        gitTask.args+='dummy'
+        gitTask.args.add('-c')
+        gitTask.args.add('dummy')
         gitTask.repository="https://git.com/dummy"
         gitTask.branch="master"
 
@@ -93,10 +93,10 @@ class GitCloneTest {
     }
 
     @Test
-    public void testOptions() {
+    void testOptions() {
         def gitTask = project.tasks.gitClone
-        gitTask.options+='-c'
-        gitTask.options+='dummy'
+        gitTask.options.add('-c')
+        gitTask.options.add('dummy')
         gitTask.repository="https://git.com/dummy"
         gitTask.branch="master"
 
@@ -110,13 +110,13 @@ class GitCloneTest {
     }
 
     @Test
-    public void testZargs() {
+    void testZargs() {
         def gitTask = project.tasks.gitClone
-        gitTask.options+='-c'
-        gitTask.options+='dummy'
+        gitTask.options.add('-c')
+        gitTask.options.add('dummy')
         gitTask.repository="https://git.com/dummy"
         gitTask.branch="master"
-        gitTask.zargs+='-zargs'
+        gitTask.zargs.add('-zargs')
 
         gitTask.executeCommand()
 

@@ -1,5 +1,7 @@
 package xyz.ronella.gradle.plugin.simple.git.task
 
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
@@ -12,63 +14,49 @@ import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
  * @author Ron Webb
  * @since 2020-05-05
  */
-class GitDeleteBranch extends GitBranch {
+abstract class GitDeleteBranch extends GitBranch {
 
-    private boolean force
+    @Optional @Input
+    abstract Property<Boolean> getForce()
 
-    public GitDeleteBranch() {
+    GitDeleteBranch() {
         super()
         description = 'A convenience git branch command for deletion.'
     }
 
-    /**
-     * Indicates force deletion of the branch if true.
-     *
-     * @return Returns true of force deletion of the branch.
-     */
-    @Optional @Input
-    boolean getForce() {
-        return force
-    }
-
-    /**
-     * Captures if force deletion must be performed.
-     * @param force Set to true to force branch deletion locally.
-     */
-    void setForce(boolean force) {
-        this.force = force
-    }
-
     @Override
-    public def initFields() {
+    def initFields() {
         super.initFields()
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
 
         if (project.hasProperty('sg_force')) {
-            force = Boolean.valueOf((project.sg_force as String).trim())
+            force.convention(Boolean.valueOf((project.sg_force as String).trim()))
             pluginExt.writeln("Found sg_force: ${force}")
         }
     }
 
     @Override
-    public String[] getAllArgs() {
-        String[] newArgs = super.getAllArgs()
+    ListProperty<String> getAllArgs() {
+        def newArgs = super.getAllArgs()
 
         initFields()
 
-        if (branch) {
-            def quotedBranch= GitExecutor.quoteString(branch, osType)
-            def argsToClean = newArgs.toList()
+        if (branch.isPresent()) {
+            def quotedBranch= GitExecutor.quoteString(branch.get(), osType)
+            def argsToClean = new ArrayList<String>(newArgs.get())
 
-            argsToClean.removeIf({___arg -> quotedBranch==___arg || zargs.contains(___arg)})
-            newArgs = argsToClean.toArray()
-            newArgs += [(force ? '-D' : '-d'), quotedBranch]
+            argsToClean.removeIf({___arg -> quotedBranch==___arg || zargs.get().contains(___arg)})
+            newArgs = project.getObjects().listProperty(String.class)
+            newArgs.addAll(argsToClean.asList())
+            newArgs.addAll((force.getOrElse(false) ? '-D' : '-d'), quotedBranch)
         }
         else {
             throw new MissingBranchException()
         }
 
-        newArgs += zargs
+        if (zargs.isPresent()) {
+            newArgs.addAll(zargs.get())
+        }
 
         return newArgs
     }

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GitTaskTest {
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -19,7 +19,7 @@ class GitTaskTest {
     }
 
     @Test
-    public void testCommand() {
+    void testCommand() {
         def gitTask = project.tasks.gitTask
         gitTask.directory = new File("D:/dev/tmp/simple-git")
         gitTask.executeCommand()
@@ -28,23 +28,22 @@ class GitTaskTest {
         def gitExe = executor.gitExe
         def cmd = executor.command
         def script = executor.script.toString()
-        def directory = executor.directory.toString()
 
         assertEquals("\"${script}\" \"D:\\dev\\tmp\\simple-git\" ${gitExe} --help".toString(), cmd)
     }
 
     @Test
-    public void testVerbose() {
-        assertTrue(project.extensions.simple_git.verbose)
+    void testVerbose() {
+        assertTrue(project.extensions.simple_git.verbose.get())
     }
 
     @Test
-    public void testNoop() {
-        assertTrue(project.extensions.simple_git.noop)
+    void testNoop() {
+        assertTrue(project.extensions.simple_git.noop.get())
     }
 
     @Test
-    public void testNoGitInstalled() {
+    void testNoGitInstalled() {
 
         def gitTask = project.tasks.gitTask
         project.extensions.simple_git.noop = false

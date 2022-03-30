@@ -1,7 +1,8 @@
 package xyz.ronella.gradle.plugin.simple.git.task
 
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingPullRequestException
@@ -13,92 +14,72 @@ import xyz.ronella.gradle.plugin.simple.git.exception.MissingRemoteException
  * @author Ron Webb
  * @since 2020-05-05
  */
-class GitFetchPR extends GitTask {
+abstract class GitFetchPR extends GitTask {
 
-    private String remote
-    private long pullRequest
-
-    public GitFetchPR() {
+    GitFetchPR() {
         super()
         description = 'A convenience git fetch command for targeting a pull request.'
-        command = 'fetch'
-        forceDirectory = true
+        command.convention('fetch')
+        forceDirectory.convention(true)
     }
 
     /**
      * The pull request ID to be fetched.
      * @return The pull request ID.
      */
-    @Optional @Input
-    long getPullRequest() {
-        return pullRequest
-    }
-
-    /**
-     * Captures the pull request id to be fetched.
-     * @param pullRequest The pull request ID.
-     */
-    void setPullRequest(long pullRequest) {
-        this.pullRequest = pullRequest
-    }
+    @Input
+    abstract Property<Long> getPullRequest()
 
     /**
      * The remote from where to fetch the pull request ID.
      *
      * @return The name of the remote.
      */
-    @Optional @Input
-    String getRemote() {
-        return remote
-    }
-
-    /**
-     * Captures the remote from where to fetch the pull request ID
-     * @param remote The name of the remote.
-     */
-    void setRemote(String remote) {
-        this.remote = remote
-    }
+    @Input
+    abstract Property<String> getRemote()
 
     @Override
-    public def initFields() {
+    def initFields() {
         super.initFields()
-        SimpleGitPluginExtension pluginExt = project.extensions.simple_git;
+        SimpleGitPluginExtension pluginExt = project.extensions.simple_git
 
         if (project.hasProperty('sg_remote')) {
-            remote = (project.sg_remote as String).trim()
+            remote.convention((project.sg_remote as String).trim())
             pluginExt.writeln("Found sg_remote: ${remote}")
         }
 
         if (project.hasProperty('sg_pull_request')) {
-            pullRequest = Long.valueOf((project.sg_pull_request as String).trim())
+            pullRequest.convention(Long.valueOf((project.sg_pull_request as String).trim()))
             pluginExt.writeln("Found sg_pull_request: ${pullRequest}")
         }
     }
 
     @Override
-    public String[] getAllArgs() {
-        String[] newArgs = super.getAllArgs()
+    ListProperty<String> getAllArgs() {
+        def newArgs = super.getAllArgs()
 
         initFields()
 
-        if (remote) {
-            newArgs += GitExecutor.quoteString(remote, osType)
+        if (remote.isPresent()) {
+            newArgs.add(GitExecutor.quoteString(remote.get(), osType))
         }
         else {
             throw new MissingRemoteException()
         }
 
-        if (pullRequest) {
-            def prBranch="pr-${pullRequest}"
-            newArgs += "pull/${pullRequest}/head:${prBranch}"
+        if (pullRequest.isPresent()) {
+            def prValue = pullRequest.get()
+            def prBranch="pr-${prValue}"
+            newArgs.add("pull/${prValue}/head:${prBranch}")
             project.ext.sg_branch = prBranch
         }
         else {
             throw new MissingPullRequestException()
         }
 
-        newArgs += zargs
+        if (zargs.isPresent()) {
+            newArgs.addAll(zargs.get())
+        }
 
         return newArgs
     }

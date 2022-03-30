@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test
 
 class GitVersionTest {
 
-    private Project project;
+    private Project project
 
     @BeforeEach
-    public void initProject() {
+    void initProject() {
         project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'xyz.ronella.simple-git'
         project.extensions.simple_git.verbose = true
@@ -20,7 +20,7 @@ class GitVersionTest {
     }
 
     @Test
-    public void testNoParameters() {
+    void testNoParameters() {
         def gitTask = project.tasks.gitVersion
 
         gitTask.executeCommand()
@@ -28,14 +28,12 @@ class GitVersionTest {
         def executor = gitTask.executor
         def gitExe = executor.gitExe
         def cmd = executor.command
-        def script = executor.script.toString()
-        def directory = executor.directory.toString()
 
         assertEquals("${gitExe} --version".toString(), cmd)
     }
 
     @Test
-    public void testDirectory() {
+    void testDirectory() {
         def gitTask = project.tasks.gitVersion
 
         gitTask.directory=new File('D:\\dev\\tmp\\simple-git')

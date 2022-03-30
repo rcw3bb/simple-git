@@ -23,11 +23,15 @@ gradlePlugin {
     }
 }
 
+ext {
+    publishingPath = version.toString().contains("SNAPSHOT") ? 'snapshots' : 'internal'
+}
+
 publishing {
     publications {
 
         repositories.maven {
-            url "https://repo.ronella.xyz/archiva/repository/${version.toString().endsWith("SNAPSHOT") ? 'snapshots' : 'internal'}/"
+            url "https://repo.ronella.xyz/archiva/repository/${publishingPath}/"
             credentials {
                 username "${archivaUsername}"
                 password "${archivaPassword}"
@@ -76,7 +80,7 @@ publishing {
     }
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
 
 repositories {
     maven {
@@ -84,6 +88,19 @@ repositories {
         credentials {
             username "${artifactoryUsername}"
             password "${artifactoryPassword}"
+        }
+        mavenContent {
+            releasesOnly()
+        }
+    }
+    maven {
+        url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
+        credentials {
+            username "${archivaUsername}"
+            password "${archivaPassword}"
+        }
+        mavenContent {
+            snapshotsOnly()
         }
     }
 }
