@@ -4,7 +4,6 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
-import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingPullRequestException
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingRemoteException
 
@@ -15,6 +14,32 @@ import xyz.ronella.gradle.plugin.simple.git.exception.MissingRemoteException
  * @since 2020-05-05
  */
 abstract class GitFetchPR extends GitTask {
+
+    /**
+     * The collection of pull request pattern per repository.
+     *
+     * @author Ron Webb
+     * @since 2022-03-31
+     */
+    enum EnumRepoTypePattern {
+        GITHUB("pull/%s/head:%s"),
+        BITBUCKET("pull-requests/%s/from:%s")
+
+        private String pattern
+
+        private EnumRepoTypePattern(String pattern) {
+            this.pattern = pattern
+        }
+
+        String getPattern(Long prCode, String branch) {
+            return String.format(pattern, prCode.toString(), branch)
+        }
+
+        static EnumRepoTypePattern of(String repoType) {
+            def enumFound = Optional.ofNullable(values().find { (it.name() == repoType.toUpperCase()) })
+            return enumFound.orElse(GITHUB)
+        }
+    }
 
     GitFetchPR() {
         super()
@@ -28,7 +53,7 @@ abstract class GitFetchPR extends GitTask {
      * @return The pull request ID.
      */
     @Input
-    abstract Property<Long> getPullRequest()
+    abstract Property<Integer> getPullRequest()
 
     /**
      * The remote from where to fetch the pull request ID.
@@ -48,7 +73,7 @@ abstract class GitFetchPR extends GitTask {
         }
 
         if (project.hasProperty('sg_pull_request')) {
-            pullRequest.convention(Long.valueOf((project.sg_pull_request as String).trim()))
+            pullRequest.convention(Integer.valueOf((project.sg_pull_request as String).trim()))
             EXTENSION.writeln("Found sg_pull_request: ${pullRequest}")
         }
     }
@@ -67,7 +92,11 @@ abstract class GitFetchPR extends GitTask {
         if (pullRequest.isPresent()) {
             def prValue = pullRequest.get()
             def prBranch="pr-${prValue}"
-            newArgs.add("pull/${prValue}/head:${prBranch}")
+            def repoType = EnumRepoTypePattern.of(EXTENSION.repoType.get())
+            def prArg = EXTENSION.pullRequestPattern.isPresent() ?
+                    String.format(EXTENSION.pullRequestPattern.get(), prValue, prBranch)
+                    : repoType.getPattern(prValue, prBranch)
+            newArgs.add(prArg)
             project.ext.sg_branch = prBranch
         }
         else {

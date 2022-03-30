@@ -46,7 +46,7 @@ class GitFetchPRTest {
     void testPullRequest() {
         def gitTask = project.tasks.gitFetchPR
 
-        def pullRequest = 1l
+        def pullRequest = 1
         gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
 
@@ -64,7 +64,7 @@ class GitFetchPRTest {
     void testPullRequestZargs() {
         def gitTask = project.tasks.gitFetchPR
 
-        def pullRequest = 1l
+        def pullRequest = 1
         gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
         gitTask.zargs.add('-zargs')
@@ -77,5 +77,62 @@ class GitFetchPRTest {
         def directory = executor.directory.toString()
 
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/${pullRequest}/head:pr-${pullRequest} -zargs".toString(), cmd)
+    }
+
+    @Test
+    void testBitbucketType() {
+        project.extensions.simple_git.repoType = 'bitbucket'
+        def gitTask = project.tasks.gitFetchPR
+
+        def pullRequest = 1
+        gitTask.remote = "origin"
+        gitTask.pullRequest = pullRequest
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull-requests/${pullRequest}/from:pr-${pullRequest}".toString(), cmd)
+    }
+
+    @Test
+    void testRepoTypeUnknown() {
+        project.extensions.simple_git.repoType = 'unknown'
+        def gitTask = project.tasks.gitFetchPR
+
+        def pullRequest = 1
+        gitTask.remote = "origin"
+        gitTask.pullRequest = pullRequest
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" pull/${pullRequest}/head:pr-${pullRequest}".toString(), cmd)
+    }
+
+    @Test
+    void testCustomPullRequestPattern() {
+        project.extensions.simple_git.pullRequestPattern = '%s/%s'
+        def gitTask = project.tasks.gitFetchPR
+
+        def pullRequest = 1
+        gitTask.remote = "origin"
+        gitTask.pullRequest = pullRequest
+
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" ${pullRequest}/pr-${pullRequest}".toString(), cmd)
     }
 }

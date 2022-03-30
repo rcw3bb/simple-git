@@ -16,7 +16,7 @@ abstract class SimpleGitPluginExtension {
     abstract Property<Boolean> getVerbose()
 
     /**
-     * It is like verbose but not execute the git command.
+     * It is like verbose but don't execute the git command.
      */
     abstract Property<Boolean> getNoop()
 
@@ -25,9 +25,25 @@ abstract class SimpleGitPluginExtension {
      */
     abstract Property<File> getDirectory()
 
+    /**
+     * The repository type that controls how the command parameters are processed.
+     * Possible value could be github and bitbucket. The default value is github.
+     */
+    abstract Property<String> getRepoType()
+
+    /**
+     * The pull request to pattern to use if default repo type doesn't support it.
+     *
+     * Possible value is 'pull/%s/head:%s'
+     *
+     * Where the first %s will be replaced with the actual PR code and the second %s with the branch.
+     */
+    abstract Property<String> getPullRequestPattern()
+
     SimpleGitPluginExtension() {
         noop.convention(false)
         verbose.convention(false)
+        repoType.convention('github')
     }
 
     def writeln(String text) {

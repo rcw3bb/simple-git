@@ -63,7 +63,6 @@ abstract class GitTask extends DefaultTask {
         description = 'Execute a git command.'
         OS_TYPE = GitExecutor.OS_TYPE
         EXTENSION = project.extensions.simple_git
-        command.convention("")
         forceDirectory.convention(true)
 
         if (!directory.isPresent()) {

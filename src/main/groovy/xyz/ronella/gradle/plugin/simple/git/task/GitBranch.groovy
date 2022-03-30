@@ -4,7 +4,6 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
-import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
 
 /**
