@@ -1,7 +1,6 @@
 package xyz.ronella.gradle.plugin.simple.git
 
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingPullRequestException
-import xyz.ronella.gradle.plugin.simple.git.exception.MissingRemoteException
 
 import static org.junit.jupiter.api.Assertions.*
 

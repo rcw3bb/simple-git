@@ -8,8 +8,6 @@ import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingDirectoryException
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingRepositoryException
 
-import java.util.function.BooleanSupplier
-
 /**
  * A convenience git task for branch clone.
  *
