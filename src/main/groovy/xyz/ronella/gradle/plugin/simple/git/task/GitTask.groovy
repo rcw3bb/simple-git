@@ -65,10 +65,6 @@ abstract class GitTask extends DefaultTask {
         EXTENSION = project.extensions.simple_git
         forceDirectory.convention(true)
 
-        if (!directory.isPresent()) {
-            directory.convention(!EXTENSION.directory.isPresent() ? project.rootProject.rootDir : EXTENSION.directory.get())
-        }
-
         initialization()
     }
 
@@ -186,9 +182,9 @@ abstract class GitTask extends DefaultTask {
         builder.addArgs(allArgs.getOrElse([]))
         builder.addOpts(options.getOrElse([]))
         builder.addForceDirectory(forceDirectory.get())
-        if (directory.isPresent()) {
-            builder.addDirectory(directory.get())
-        }
+
+        def  targetDir = directory.getOrElse(EXTENSION.directory.getOrElse(project.rootProject.rootDir))
+        builder.addDirectory(targetDir)
 
         return builder.build()
     }
