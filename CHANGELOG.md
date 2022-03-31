@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1 : 2022-04-01
+
+### Fix
+
+* Resolve the NPE when running gradle in java 17.
+
 ## 2.0.0 : 2022-04-01
 
 ### New
