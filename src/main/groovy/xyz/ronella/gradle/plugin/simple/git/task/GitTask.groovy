@@ -64,7 +64,7 @@ abstract class GitTask extends DefaultTask {
         OS_TYPE = GitExecutor.OS_TYPE
         EXTENSION = project.extensions.simple_git
         forceDirectory.convention(true)
-
+        directory.convention(project.rootProject.rootDir)
         initialization()
     }
 
@@ -176,6 +176,7 @@ abstract class GitTask extends DefaultTask {
         def builder = GitExecutor.getBuilder()
 
         builder.addKnownGitExe(knownGit)
+
         if (command.isPresent()) {
             builder.addArg(command.get())
         }
@@ -183,8 +184,15 @@ abstract class GitTask extends DefaultTask {
         builder.addOpts(options.getOrElse([]))
         builder.addForceDirectory(forceDirectory.get())
 
-        def  targetDir = directory.getOrElse(EXTENSION.directory.getOrElse(project.rootProject.rootDir))
-        builder.addDirectory(targetDir)
+        def  targetDir = java.util.Optional.ofNullable(directory.get())
+
+        if (directory.get()==project.rootProject.rootDir) {
+            targetDir = java.util.Optional.ofNullable(EXTENSION.directory.getOrElse(directory.get()))
+        }
+
+        targetDir.ifPresent { ___dir->
+            builder.addDirectory(___dir)
+        }
 
         return builder.build()
     }

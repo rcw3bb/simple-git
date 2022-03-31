@@ -26,7 +26,7 @@ class GitFetchPRTest {
     void testNoParameters() {
         def gitTask = project.tasks.gitFetchPR
 
-        assertThrows(MissingRemoteException, {
+        assertThrows(MissingPullRequestException, {
             gitTask.executeCommand()
         })
     }
@@ -47,7 +47,6 @@ class GitFetchPRTest {
         def gitTask = project.tasks.gitFetchPR
 
         def pullRequest = 1
-        gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
 
         gitTask.executeCommand()
@@ -104,7 +103,6 @@ class GitFetchPRTest {
         def gitTask = project.tasks.gitFetchPR
 
         def pullRequest = 1
-        gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
 
         gitTask.executeCommand()
@@ -123,7 +121,6 @@ class GitFetchPRTest {
         def gitTask = project.tasks.gitFetchPR
 
         def pullRequest = 1
-        gitTask.remote = "origin"
         gitTask.pullRequest = pullRequest
 
         gitTask.executeCommand()

@@ -24,10 +24,12 @@ class GitBranchTest {
     @Test
     void testNoParameters() {
         def gitTask = project.tasks.gitBranch
+        gitTask.executeCommand()
+        def executor = gitTask.executor
 
-        assertThrows(MissingBranchException, {
-            gitTask.executeCommand()
-        })
+        String cmd = executor.command
+
+        assertTrue(cmd.contains(project.extensions.simple_git.branch.get()))
     }
 
     @Test

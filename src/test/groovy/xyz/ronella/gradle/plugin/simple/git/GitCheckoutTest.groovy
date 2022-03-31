@@ -24,16 +24,17 @@ class GitCheckoutTest {
     @Test
     void testNoParameters() {
         def gitTask = project.tasks.gitCheckout
+        def executor = gitTask.executor
 
-        assertThrows(MissingBranchException, {
-            gitTask.executeCommand()
-        })
+        String cmd = executor.command
+
+        assertTrue(cmd.contains(project.extensions.simple_git.branch.get()))
     }
 
     @Test
     void testOtherParameters() {
         def gitTask = project.tasks.gitCheckout
-        gitTask.args.add('test')
+        gitTask.args=['test']
 
         gitTask.executeCommand()
         def executor = gitTask.executor
@@ -42,7 +43,7 @@ class GitCheckoutTest {
         def script = executor.script.toString()
         def directory = executor.directory.toString()
 
-        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout test".toString(), cmd)
+        assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout test \"master\"".toString(), cmd)
 
     }
 
@@ -59,7 +60,6 @@ class GitCheckoutTest {
         def directory = executor.directory.toString()
 
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout \"master\"".toString(), cmd)
-
     }
 
     @Test

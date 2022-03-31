@@ -21,9 +21,19 @@ abstract class SimpleGitPluginExtension {
     abstract Property<Boolean> getNoop()
 
     /**
-     * The default directory to use if the default directory was not specified.
+     * The default directory to use if the directory was not specified.
      */
     abstract Property<File> getDirectory()
+
+    /**
+     * The default branch to use if the branch was not specified.
+     */
+    abstract Property<String> getBranch()
+
+    /**
+     * The default remote to use if the remote was not specified.
+     */
+    abstract Property<String> getRemote()
 
     /**
      * The repository type that controls how the command parameters are processed.
@@ -44,6 +54,8 @@ abstract class SimpleGitPluginExtension {
         noop.convention(false)
         verbose.convention(false)
         repoType.convention('github')
+        branch.convention('master')
+        remote.convention('origin')
     }
 
     def writeln(String text) {

@@ -3,6 +3,7 @@ package xyz.ronella.gradle.plugin.simple.git.task
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingPullRequestException
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingRemoteException
@@ -36,7 +37,7 @@ abstract class GitFetchPR extends GitTask {
         }
 
         static EnumRepoTypePattern of(String repoType) {
-            def enumFound = Optional.ofNullable(values().find { (it.name() == repoType.toUpperCase()) })
+            def enumFound = java.util.Optional.ofNullable(values().find { (it.name() == repoType.toUpperCase()) })
             return enumFound.orElse(GITHUB)
         }
     }
@@ -60,7 +61,7 @@ abstract class GitFetchPR extends GitTask {
      *
      * @return The name of the remote.
      */
-    @Input
+    @Optional @Input
     abstract Property<String> getRemote()
 
     @Override
@@ -82,10 +83,13 @@ abstract class GitFetchPR extends GitTask {
     ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
-        if (remote.isPresent()) {
-            newArgs.add(GitExecutor.quoteString(remote.get(), OS_TYPE))
+        def targetRemote = java.util.Optional.ofNullable(remote.getOrElse(EXTENSION.remote.getOrNull()))
+
+        targetRemote.ifPresent {___remote ->
+            newArgs.add(GitExecutor.quoteString(___remote, OS_TYPE))
         }
-        else {
+
+        if (targetRemote.isEmpty()) {
             throw new MissingRemoteException()
         }
 

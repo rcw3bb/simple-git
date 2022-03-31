@@ -3,6 +3,7 @@ package xyz.ronella.gradle.plugin.simple.git.task
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
 
@@ -14,7 +15,7 @@ import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
  */
 abstract class GitBranch extends GitTask {
 
-    @Input
+    @Optional @Input
     abstract Property<String> getBranch()
 
     GitBranch() {
@@ -38,11 +39,13 @@ abstract class GitBranch extends GitTask {
     ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
-        if (branch.isPresent()) {
-            newArgs.add(GitExecutor.quoteString(branch.get(), OS_TYPE))
+        def targetBranch = java.util.Optional.ofNullable(branch.getOrElse(EXTENSION.branch.getOrNull()))
+
+        targetBranch.ifPresent {___branch ->
+            newArgs.add(GitExecutor.quoteString(___branch, OS_TYPE))
         }
 
-        if (newArgs.isPresent() && newArgs.get().isEmpty()) {
+        if (targetBranch.isEmpty()) {
             throw new MissingBranchException()
         }
 
