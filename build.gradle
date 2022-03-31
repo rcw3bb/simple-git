@@ -83,25 +83,33 @@ publishing {
 sourceCompatibility = 1.11
 
 repositories {
-    maven {
-        url 'https://repo.ronella.xyz/artifactory/java-central'
-        credentials {
-            username "${artifactoryUsername}"
-            password "${artifactoryPassword}"
+    if (Boolean.valueOf(USE_PRIVATE_REPO)) {
+        println "Using Private Repository"
+
+        maven {
+            url 'https://repo.ronella.xyz/artifactory/java-central'
+            credentials {
+                username "${artifactoryUsername}"
+                password "${artifactoryPassword}"
+            }
+            mavenContent {
+                releasesOnly()
+            }
         }
-        mavenContent {
-            releasesOnly()
+        maven {
+            url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
+            credentials {
+                username "${archivaUsername}"
+                password "${archivaPassword}"
+            }
+            mavenContent {
+                snapshotsOnly()
+            }
         }
     }
-    maven {
-        url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
-        credentials {
-            username "${archivaUsername}"
-            password "${archivaPassword}"
-        }
-        mavenContent {
-            snapshotsOnly()
-        }
+    else {
+        println "Using mavenCentral Repository"
+        mavenCentral()
     }
 }
 
