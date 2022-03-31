@@ -1,5 +1,7 @@
 package xyz.ronella.gradle.plugin.simple.git.task
 
+import org.gradle.api.provider.ListProperty
+
 /**
  * A convenience git task for tag command.
  *
@@ -12,5 +14,16 @@ abstract class GitTag extends GitTask {
         description = 'A convenience git tag command.'
         command.convention('tag')
         forceDirectory.convention(true)
+    }
+
+    @Override
+    ListProperty<String> getAllArgs() {
+        def newArgs = super.getAllArgs()
+
+        if (zargs.isPresent()) {
+            newArgs.addAll(zargs.get())
+        }
+
+        return newArgs
     }
 }
