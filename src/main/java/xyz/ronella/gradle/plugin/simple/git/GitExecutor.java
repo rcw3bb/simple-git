@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -93,9 +94,12 @@ public class GitExecutor {
     }
 
     private String getGitExeByEnvVar() {
-        String gitHome=System.getenv("GIT_HOME");
-        Path programFile = Paths.get(gitHome, GIT_EXE);
-        return getProgramFile(programFile);
+        var gitHome= Optional.ofNullable(System.getenv("GIT_HOME"));
+        if (gitHome.isPresent()) {
+            Path programFile = Paths.get(gitHome.get(), GIT_EXE);
+            return getProgramFile(programFile);
+        }
+        return null;
     }
 
     /**
