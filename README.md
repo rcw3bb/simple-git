@@ -1,10 +1,10 @@
 # Simple Git Gradle Plugin
 
-The plugin that allows you access to git commands inside gradle as task.
+The plugin that allows you access to git commands in gradle as task.
 
 # Pre-requisite
 
-* Java 8 (Minimum)
+* Java 11 (Minimum)
 * Windows/Linux/MacOS
 * Git Application
 
@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "xyz.ronella.simple-git" version "1.3.0"
+    id "xyz.ronella.simple-git" version "2.0.0"
 }
 ```
 
@@ -36,6 +36,7 @@ plugins {
 > gitFetchPR - A convenience git fetch command for targeting a pull request.
 > gitPull - A convenience git pull command.
 > gitStatus - A convenience git status command.
+> gitTag - A convenience git tag command.
 > gitTask - Execute a git command.
 > gitVersion - A convenience git --version command.
 > ```
@@ -48,15 +49,17 @@ The first location that the plugin will try to look for the **git executable** w
 
 | Property | Description | Type | Default |
 |-----|------|------|-----|
-| simple_git.directory | Tells the plugin what is the default git application directory it will work on. | File | *The plugin project directory* |
-| simple_git.noop | This is like the verbose property with the addition of not running the git command. This is good for debugging. | boolean | false |
+| simple_git.branch | The default branch to use by the convenience tasks except for gitDeleteBranch task. You don't want to accidentally delete a branch. | String | master |
+| simple_git.directory | Tells the plugin what is the default git application directory it will work on. | File | *The project directory* |
+| simple_git.noop | This is like the verbose property with the addition of not running the git command. This is good for debugging on what command parameters it is trying to execute. | boolean | false |
+| simple_git.pullRequestPattern | Explicitly define the pull request pattern overriding the effect of repoType parameter. <br/><br/>Example value is **pull/%s/head:%s**<br/><br/>Where the first %s will be replaced with the actual PR code and the second %s with the calculated branch *(i.e. normally with the syntax **pr-<PR-CODE>**)*. | String |  |
+| simple_git.remote | The default remote to use by the convenience tasks. | String | origin |
+| simple_git.repoType | The repository type that controls how the command parameters are processed. The valid possible values are **github** or **bitbucket**. | String | github |
 | simple_git.verbose | The plugin will to display more information on the console *(e.g. the actual git command being run)*. | boolean | false |
 
 ## The forceDirectory task property
 
 The git command is normally performed inside a **git project directory** *(e.g. git status)*. Hence, there's no need to specify the directory. The **forceDirectory**, will ensure that the **git command** will be performed inside a git project directory *(i.e. directory with **.git** directory)*. Since most of the git command requires that it must be executed in this directory, **the forceDirectory is defaulted to true**.  However, it will only take effect if the **directory property is not null**.
-
-For convenience, you can set the **simple_git.directory** to your target git application directory *(e.g. project.projectDir)* and have a peace of mind that you are executing the git command in that directory.
 
 ## General Syntax
 
@@ -73,7 +76,7 @@ For convenience, you can set the **simple_git.directory** to your target git app
 
 > All these task properties *(i.e. options, command and args)* are always available to all the tasks *(i.e. including the convience tasks)*.
 >
-> The **String[]** in the command line will be all the values delimited by comma assigned to an argument *(e.g. -P**sg_args**=**-D,pr-2**)*
+> The **String[]** in the command line will be all the values **delimited by comma** assigned to an argument *(e.g. -P**sg_args**=**-D,pr-2**)*
 
 #### Example
 
@@ -94,12 +97,12 @@ All the member tasks of **Simple Git** group is a child for **gitTask**. The **c
 
 Whatever you can do with the **git command** in console you can do it in gradle with this task. 
 
-| Task Name | Task Property  | Gradle Command Line Argument | Type     |
-| --------- | -------------- | ---------------------------- | -------- |
-| gitTask   | args           | sg_args                      | String[] |
-|           | command        | sg_command                   | String   |
-|           | directory      | sg_directory                 | String   |
-|           | options        | sg_options                   | String[] |
+| Task Name | Task Property | Gradle Command Line Argument | Type     |
+| --------- | ------------- | ---------------------------- | -------- |
+| gitTask   | args          | sg_args                      | String[] |
+|           | command       | sg_command                   | String   |
+|           | directory     | sg_directory                 | String   |
+|           | options       | sg_options                   | String[] |
 
 #### Example
 
@@ -115,8 +118,7 @@ git clone https://github.com/rcw3bb/simple-git.git C:\tmp\simple-git
 gitTask {
   forceDirectory = false//Just directly use the git executable. 
   command = 'clone' //Git Command
-  args = ['https://github.com/rcw3bb/simple-git.git', 
-          'C:\\tmp\\simple-git'] //The git command arguments
+  args = ['https://github.com/rcw3bb/simple-git.git', 'C:\\tmp\\simple-git'] //The git command arguments
 }
 ```
 
@@ -137,8 +139,7 @@ gitClone {
 task cloneSimpleGitByGitTask(type: GitTask) {
   forceDirectory = false//Just directly use the git executable. 
   command = 'clone' //Git Command
-  args = ['https://github.com/rcw3bb/simple-git.git', 
-          'C:\\tmp\\simple-git'] //The git command arguments
+  args = ['https://github.com/rcw3bb/simple-git.git', 'C:\\tmp\\simple-git'] //The git command arguments
 }
 ```
 
@@ -166,7 +167,7 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git" version "1.3.0"
+  id "xyz.ronella.simple-git" version "2.0.0"
 }
 
 simple_git.directory=new File('C:\\tmp\\simple-git')
@@ -181,7 +182,8 @@ gitClone {
 | --------------- | ------------- | ------ | ------- | ------- |
 | gitBranch       | branch        | sg_branch |String  |true  |
 |        | directory        | sg_directory |File  |  |
-| gitCheckout     | directory | sg_directory |File|true|
+| gitCheckout     | branch | sg_branch |String|true|
+|  | directory | sg_directory |File||
 | gitClone        | branch        | sg_branch |String  |true  |
 |                 | directory    | sg_directory |File  |  |
 |                 | repository    | sg_repository |String  |  |
@@ -193,11 +195,26 @@ gitClone {
 |                 | pullRequest   | sg_pull_request |long    |    |
 | gitPull         | directory | sg_directory | File |  |
 | gitStatus      | directory | sg_directory | File |  |
+| gitTag | directory | sg_directory | File | true |
 | gitVersion |  |  |  |  |
 
 > The **options** and **args** tasks properties are always available.
 >
 > The **directory** property must be a valid **git application directory** except for the **gitClone task**.
+
+## directoryIsEmpty Method
+
+The **directoryIsEmpty() is a convenience method** that can be used in **onlyIf block** like the following:
+
+```groovy
+gitClone {
+  onlyIf {
+    directoryIsEmpty()
+  }
+  directory = file('C:\\tmp\\simple-git\\')
+  repository='https://github.com/rcw3bb/simple-git.git'
+}
+```
 
 ## Terminal Arguments (zargs)
 
@@ -214,11 +231,17 @@ gitCheckout {
 
 ## Using the Git Task in Gradle Command Line
 
-All the available tasks in simple git can be run with gradle command.  The git clone command sample above will be like:
+All the available tasks in simple git can be run with gradle command like the following:
 
 ```
-gradle gitClone -Psg_repository=https://github.com/rcw3bb/simple-git.git -Psg_directory=C:\tmp\simple-git
+gradle gitClone -Psg_options='-c,core.longpaths=true' -Psg_repository=https://github.com/rcw3bb/simple-git.git -Psg_directory=C:\tmp\simple-git
 ```
+
+> The preceding command includes a sample usage of **sg_options**. For this particular case it includes the support **long paths**. The actual git command is like the following:
+>
+> ```
+> git -c core.longpaths=true clone https://github.com/rcw3bb/simple-git.git C:\tmp\simple-git
+> ```
 
 ## License
 
