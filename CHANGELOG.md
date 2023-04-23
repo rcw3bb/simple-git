@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.3 : 2023-04-21
+
+### Fix
+
+* Use the first detected executable.
+
+## 2.0.2 : 2023-04-21 (DO NOT USE THIS IS BROKEN)
+
 ## 2.0.1 : 2022-04-01
 
 ### Fix
