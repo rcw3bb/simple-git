@@ -158,6 +158,13 @@ abstract class GitTask extends DefaultTask {
             def knownGit = stdOutput.toString().trim()
 
             if (knownGit.size()>0) {
+                switch (osType) {
+                    case OSType.Windows:
+                        String[] execs = knownGit.split("\r\n");
+                        knownGit = execs.first();
+                        break;
+                }
+
                 return knownGit
             }
         }
