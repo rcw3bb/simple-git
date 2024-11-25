@@ -1,0 +1,13 @@
+[versions]
+junit-version = { require = "latest.release"}
+mockito-core-version = { require = "latest.release"}
+mockito-inline-version = { require = "latest.release"}
+
+[libraries]
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-version" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-version" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-core-version" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline-version"}
+
+[bundles]
+unit-test = ["junit-jupiter-api", "junit-jupiter-engine", "mockito-core", "mockito-inline"]

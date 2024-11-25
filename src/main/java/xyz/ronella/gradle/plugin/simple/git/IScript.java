@@ -4,6 +4,7 @@ import xyz.ronella.gradle.plugin.simple.git.impl.LinuxOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.MacOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.OtherOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.WindowsOS;
+import xyz.ronella.trivial.handy.OSType;
 
 /**
  * The template of identifying the support script to to run the git command in a particular directory.
@@ -21,18 +22,18 @@ public interface IScript {
     String getScript();
 
     /**
-     * The factory of creating a valid IScript implementation.
+     * The builder of creating a valid IScript implementation.
      *
      * @param osType An instance of OSType
      * @return An implementation of IExecutable.
      */
-    public static IScript getInstance(OSType osType) {
+    public static IScript of(OSType osType) {
         switch (osType) {
-            case Windows:
+            case WINDOWS:
                 return new WindowsOS();
-            case Linux:
+            case LINUX:
                 return new LinuxOS();
-            case Mac:
+            case MAC:
                 return new MacOS();
             default:
                 return new OtherOS();

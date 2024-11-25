@@ -1,128 +1,112 @@
+buildscript {
+    configurations.classpath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
 plugins {
     id 'java'
     id 'groovy'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.11.0'
-    id 'maven-publish'
+    id 'jacoco'
+    id 'pmd'
+    alias(libs.plugins.gradle.plugin.publish)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.snyk)
 }
 
-pluginBundle {
-    website = 'https://github.com/rcw3bb/simple-git'
-    vcsUrl = 'https://github.com/rcw3bb/simple-git'
-    tags = ['git', 'repository', 'source', 'source-control', 'versioning', 'simple-git', 'ronella']
+ext {
+    pluginDescription = 'The plugin that allows you access to git commands inside gradle as task'
+}
+
+configurations {
+    plugin
+    implementation.extendsFrom(plugin)
+
+    mockitoAgent
+
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
+        it.outgoing.artifact(shadowJar)
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.plugin]
+    archiveClassifier.set("")
+    relocate 'xyz.ronella.trivial', "${project.group}.shadow.trivial"
+    minimize()
 }
 
 gradlePlugin {
     plugins {
+        website = 'https://github.com/rcw3bb/simple-git'
+        vcsUrl = 'https://github.com/rcw3bb/simple-git'
+        description = pluginDescription
         simpleGit {
             id = 'xyz.ronella.simple-git'
             displayName = 'Simple Git Plugin'
-            description = 'The plugin that allows you access to git commands inside gradle as task'
+            description = pluginDescription
             implementationClass = 'xyz.ronella.gradle.plugin.simple.git.SimpleGitPlugin'
         }
     }
 }
 
-ext {
-    publishingPath = version.toString().contains("SNAPSHOT") ? 'snapshots' : 'internal'
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
-publishing {
-    publications {
-
-        repositories.maven {
-            url "https://repo.ronella.xyz/archiva/repository/${publishingPath}/"
-            credentials {
-                username "${archivaUsername}"
-                password "${archivaPassword}"
-            }
-        }
-
-        pluginMaven(MavenPublication) {
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-
-            pom {
-                name = 'Simple Git Plugin'
-                description = 'The plugin that allows you access to git commands inside gradle as task'
-                url = 'https://github.com/rcw3bb/simple-git'
-                licenses {
-                    license {
-                        name = 'MIT License'
-                        url = 'https://github.com/rcw3bb/simple-git/blob/master/LICENSE.md'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'ron'
-                        name = 'Ronaldo Webb'
-                        email = 'ron@ronella.xyz'
-                    }
-                }
-                scm {
-                    url = 'https://github.com/rcw3bb/simple-git'
-                }
-            }
-
-            artifacts {
-                groupId 'xyz.ronella.gradle.plugin'
-                artifactId project.name
-                version version
-                artifact "./build/libs/${project.name}-${version}.jar"
-            }
-        }
-    }
+pmd {
+    consoleOutput = true
+    toolVersion = "7.7.0"
+    rulesMinimumPriority = 5
+    ruleSetFiles = files('quality/pmd/java/custom.xml')
+    ruleSets = []
 }
 
-sourceCompatibility = 1.11
+pmdTest.enabled = false
+
+snyk {
+    arguments = '--all-sub-projects'
+    severity = 'low'
+    api = "${snykToken}"
+    autoDownload = true
+    autoUpdate = true
+}
 
 repositories {
-    if (Boolean.valueOf(USE_PRIVATE_REPO)) {
-        println "Using Private Repository"
+    mavenCentral()
+}
 
-        maven {
-            url 'https://repo.ronella.xyz/artifactory/java-central'
-            credentials {
-                username "${artifactoryUsername}"
-                password "${artifactoryPassword}"
-            }
-            mavenContent {
-                releasesOnly()
-            }
-        }
-        maven {
-            url 'https://repo.ronella.xyz/archiva/repository/snapshots/'
-            credentials {
-                username "${archivaUsername}"
-                password "${archivaPassword}"
-            }
-            mavenContent {
-                snapshotsOnly()
-            }
-        }
-    }
-    else {
-        println "Using mavenCentral Repository"
-        mavenCentral()
-    }
+dependencyLocking {
+    lockAllConfigurations()
 }
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
 
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.2'
+    plugin libs.trivial.chunk
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
+    testImplementation testLibs.bundles.unit.test
+    mockitoAgent(testLibs.mockito.core) {
+        transitive = false
+    }
 }
 
 test {
+    jvmArgs("-javaagent:${configurations.mockitoAgent.asPath}")
     useJUnitPlatform()
+    dependsOn pmdMain
+    finalizedBy(jacocoTestReport)
+    finalizedBy('snyk-test')
 }
+
+jar {
+    enabled = false
+    dependsOn test, shadowJar
+    dependsOn('snyk-monitor')
+}
+
+shadowJar.mustRunAfter(test)

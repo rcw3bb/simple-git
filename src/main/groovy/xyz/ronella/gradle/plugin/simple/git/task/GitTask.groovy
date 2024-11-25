@@ -7,10 +7,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import xyz.ronella.gradle.plugin.simple.git.OSType
+
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
+import xyz.ronella.trivial.handy.OSType
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -129,10 +130,10 @@ abstract class GitTask extends DefaultTask {
         def gitExec = GitExecutor.GIT_EXE
         String cmd = null
         switch (osType) {
-            case OSType.Windows:
+            case OSType.WINDOWS:
                 cmd="where"
                 break
-            case OSType.Linux:
+            case OSType.LINUX:
                 cmd="which"
                 break
         }
@@ -159,7 +160,7 @@ abstract class GitTask extends DefaultTask {
 
             if (knownGit.size()>0) {
                 switch (osType) {
-                    case OSType.Windows:
+                    case OSType.WINDOWS:
                         String[] execs = knownGit.split("\r\n");
                         knownGit = execs.first();
                         break;

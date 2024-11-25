@@ -1,5 +1,7 @@
 package xyz.ronella.gradle.plugin.simple.git;
 
+import xyz.ronella.trivial.handy.OSType;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,7 @@ public class GitExecutor {
     /**
      * Holds the git executable.
      */
-    public final static String GIT_EXE = IExecutable.getInstance(OS_TYPE).getExecutable();
+    public final static String GIT_EXE = IExecutable.of(OS_TYPE).getExecutable();
 
     private final List<String> args;
 
@@ -79,7 +81,7 @@ public class GitExecutor {
             return null;
         }
         else {
-            if (osType==null || OSType.Windows==osType) {
+            if (osType==null || OSType.WINDOWS==osType) {
                 return String.format("\"%s\"", text);
             }
         }
@@ -138,22 +140,22 @@ public class GitExecutor {
     }
 
     private Path getScriptPath(String script) {
-        final String DEFAULT_JOIN_DELIMITER = "/";
-        final String SCRIPTS_DIR = "scripts";
-        final Path SCRIPT_LOCATION = Paths.get("build", "simple", "git");
+        final String joinDelimiter = "/";
+        final String scriptsDir = "scripts";
+        final Path scriptLocation = Paths.get("build", "simple", "git");
 
-        String internalScript = String.join(DEFAULT_JOIN_DELIMITER, SCRIPTS_DIR, script);
-        Path pathScript = Paths.get(".", SCRIPT_LOCATION.toString(), SCRIPTS_DIR).toAbsolutePath();
+        String internalScript = String.join(joinDelimiter, scriptsDir, script);
+        Path pathScript = Paths.get(".", scriptLocation.toString(), scriptsDir).toAbsolutePath();
         File fileScript = pathScript.toFile();
         Path outputScript = Paths.get(fileScript.toString(), script);
 
         if (!outputScript.toFile().exists()) {
             fileScript.mkdirs();
-            try (InputStream isStream = this.getClass().getClassLoader().getResourceAsStream(internalScript)) {
+            try (InputStream isStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(internalScript)) {
                 Files.copy(isStream, outputScript);
                 switch (OS_TYPE) {
-                    case Linux:
-                    case Mac:
+                    case LINUX:
+                    case MAC:
                         makeExecutable(outputScript.toString());
                         break;
                 }
@@ -171,7 +173,7 @@ public class GitExecutor {
      * @return The path of the script.
      */
     public Path getScript() {
-        return getScriptPath(IScript.getInstance(OS_TYPE).getScript());
+        return getScriptPath(IScript.of(OS_TYPE).getScript());
     }
 
     /**
@@ -309,6 +311,9 @@ public class GitExecutor {
         return command.toString();
     }
 
+    /**
+     * The builder of the GitExecutor
+     */
     private static class GitExecutorBuilder {
 
         private final List<String> args = new ArrayList<>();
@@ -317,11 +322,21 @@ public class GitExecutor {
         private boolean forceDirectory;
         private Path directory;
 
+        /**
+         * Adds the known git executable.
+         * @param knownGitExe The known git executable.
+         * @return The builder.
+         */
         public GitExecutorBuilder addKnownGitExe(String knownGitExe) {
             this.knownGitExe = knownGitExe;
             return this;
         }
 
+        /**
+         * Adds the git command argument.
+         * @param arg The git command argument.
+         * @return The builder.
+         */
         public GitExecutorBuilder addArg(String arg) {
             if (null!=arg) {
                 args.add(arg);
@@ -329,6 +344,11 @@ public class GitExecutor {
             return this;
         }
 
+        /**
+         * Adds the git command arguments.
+         * @param args The git command arguments.
+         * @return The builder.
+         */
         public GitExecutorBuilder addArgs(List<String> args) {
             if (null!=args) {
                 this.args.addAll(args);
@@ -336,6 +356,11 @@ public class GitExecutor {
             return this;
         }
 
+        /**
+         * Adds the git command options.
+         * @param opts The git command options.
+         * @return The builder.
+         */
         public GitExecutorBuilder addOpts(List<String> opts) {
             if (null!=opts) {
                 this.opts.addAll(opts);
@@ -343,11 +368,21 @@ public class GitExecutor {
             return this;
         }
 
+        /**
+         * Add indication to force in directory execution.
+         * @param forceDirectory The indication to force in directory execution.
+         * @return The builder.
+         */
         public GitExecutorBuilder addForceDirectory(boolean forceDirectory) {
             this.forceDirectory = forceDirectory;
             return this;
         }
 
+        /**
+         * Adds the directory to run the git command.
+         * @param directory The directory to run the git command.
+         * @return The builder.
+         */
         public GitExecutorBuilder addDirectory(File directory) {
             if (null!=directory) {
                 this.directory = directory.toPath();
@@ -355,6 +390,10 @@ public class GitExecutor {
             return this;
         }
 
+        /**
+         * Build an instance of GitExecutor.
+         * @return The instance of GitExecutor.
+         */
         public GitExecutor build() {
             return new GitExecutor(this);
         }

@@ -1,0 +1,15 @@
+[versions]
+trivial-chunk-version = { require = "latest.release"}
+gradle-plugin-publish-version = { require = "latest.release" }
+shadow-version = { require = "latest.release"}
+snyk-version = { require = "latest.release" }
+
+[libraries]
+trivial-chunk = { module = "xyz.ronella.casual:trivial-chunk", version.ref = "trivial-chunk-version" }
+
+[bundles]
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow-version" }
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish-version" }
+snyk = { id = "io.snyk.gradle.plugin.snykplugin", version.ref = "snyk-version" }

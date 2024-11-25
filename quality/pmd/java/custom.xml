@@ -1,0 +1,36 @@
+<ruleset name="Custom Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Best Practices
+    </description>
+
+    <rule ref="category/java/design.xml/CyclomaticComplexity" />
+    <rule ref="category/java/design.xml/GodClass" />
+    <rule ref="category/java/design.xml/NcssCount">
+        <properties>
+            <property name="methodReportLevel" value="30" />
+            <property name="classReportLevel" value="1500" />
+            <property name="ncssOptions" value="" />
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml" />
+    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
+    <rule ref="category/java/bestpractices.xml/LooseCoupling" />
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum" value="17" />
+        </properties>
+    </rule>
+    <rule ref="category/java/documentation.xml/CommentRequired">
+        <properties>
+            <property name="fieldCommentRequirement" value="Ignored"/>
+        </properties>
+    </rule>
+</ruleset>

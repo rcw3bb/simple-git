@@ -4,6 +4,7 @@ import xyz.ronella.gradle.plugin.simple.git.impl.LinuxOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.OtherOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.WindowsOS;
 import xyz.ronella.gradle.plugin.simple.git.impl.MacOS;
+import xyz.ronella.trivial.handy.OSType;
 
 /**
  * The template of identifying the actual git executable.
@@ -21,18 +22,18 @@ public interface IExecutable {
     String getExecutable();
 
     /**
-     * The factory of creating a valid IExecutable implementation.
+     * The builder of creating a valid IExecutable implementation.
      *
      * @param osType An instance of OSType
      * @return An implementation of IExecutable.
      */
-    public static IExecutable getInstance(OSType osType) {
+    static IExecutable of(OSType osType) {
         switch (osType) {
-            case Windows:
+            case WINDOWS:
                 return new WindowsOS();
-            case Linux:
+            case LINUX:
                 return new LinuxOS();
-            case Mac:
+            case MAC:
                 return new MacOS();
             default:
                 return new OtherOS();

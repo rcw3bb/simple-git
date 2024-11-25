@@ -1,7 +1,5 @@
 package xyz.ronella.gradle.plugin.simple.git
 
-import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
-
 import static org.junit.jupiter.api.Assertions.*
 
 import org.gradle.api.Project
