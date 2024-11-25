@@ -108,7 +108,7 @@ abstract class GitTask extends DefaultTask {
         return java.util.Optional.ofNullable(sbCred.getStringBuilder().isBlank() ? null : sbCred.toString())
     }
 
-    protected String insertCredToURL(String url) {
+    String insertCredToURL(String url) {
         final var encodedCred = getEncodedCred()
         return encodedCred.isPresent() ? url.replaceFirst("://", "://" + encodedCred.get() + "@") : url
     }
