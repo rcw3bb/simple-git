@@ -12,6 +12,8 @@ import org.gradle.api.tasks.TaskAction
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
+import xyz.ronella.trivial.decorator.StringBuilderAppender
+import xyz.ronella.trivial.functional.impl.StringBuilderDelim
 import xyz.ronella.trivial.handy.OSType
 
 import java.nio.charset.StandardCharsets
@@ -85,18 +87,30 @@ abstract class GitTask extends DefaultTask {
         initialization()
     }
 
-    String urlEncode(final String value) {
+    protected String urlEncode(final String value) {
         return URLEncoder.encode(value, StandardCharsets.UTF_8)
     }
 
-    Provider<String> getEncodedUsername() {
+    protected Provider<String> getEncodedUsername() {
         final def usrName = username.orElse(EXTENSION.username)
         return usrName.map(___username -> urlEncode(___username))
     }
 
-    Provider<String> getEncodedPassword() {
+    protected Provider<String> getEncodedPassword() {
         final def passwd = password.orElse(EXTENSION.password)
         return passwd.map(___password -> urlEncode(___password))
+    }
+
+    protected java.util.Optional<String> getEncodedCred() {
+        final var sbCred = new StringBuilderAppender(new StringBuilderDelim(":"))
+                .appendWhen(sb -> sb.append(encodedUsername.get())).when(sb -> encodedUsername.isPresent())
+                .appendWhen(sb -> sb.append(encodedPassword.get())).when(sb -> encodedUsername.isPresent() && encodedPassword.isPresent())
+        return java.util.Optional.ofNullable(sbCred.getStringBuilder().isBlank() ? null : sbCred.toString())
+    }
+
+    protected String insertCredToURL(String url) {
+        final var encodedCred = getEncodedCred()
+        return encodedCred.isPresent() ? url.replaceFirst("://", "://" + encodedCred.get() + "@") : url
     }
 
     /**

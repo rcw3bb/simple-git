@@ -124,4 +124,39 @@ class GitTaskTest {
         def expected = URLEncoder.encode(gitTask.password.get(), StandardCharsets.UTF_8)
         assertEquals(expected, gitTask.encodedPassword.get())
     }
+
+    @Test
+    void testNoCredUrlInsert() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def expected = "https://git.com/dummy"
+        assertEquals(expected, gitTask.insertCredToURL(expected))
+    }
+
+    @Test
+    void testCredUsernameOnlyUrlInsert() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.username = "username"
+        def url = "https://git.com/dummy"
+        def expected = "https://username@git.com/dummy"
+        assertEquals(expected, gitTask.insertCredToURL(url))
+    }
+
+    @Test
+    void testCredUsernamePasswordUrlInsert() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.username = "username"
+        gitTask.password = "password"
+        def url = "https://git.com/dummy"
+        def expected = "https://username:password@git.com/dummy"
+        assertEquals(expected, gitTask.insertCredToURL(url))
+    }
+
+    @Test
+    void testCredPasswordOnlyUrlInsert() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.password = "password"
+        def expected = "https://git.com/dummy"
+        assertEquals(expected, gitTask.insertCredToURL(expected))
+    }
+
 }

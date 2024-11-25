@@ -53,7 +53,7 @@ abstract class GitClone extends GitTask {
         }
 
         if (repository.isPresent()) {
-            newArgs.add(GitExecutor.quoteString(repository.get(), OS_TYPE))
+            newArgs.add(GitExecutor.quoteString(insertCredToURL(repository.get()), OS_TYPE))
         }
         else {
             throw new MissingRepositoryException()

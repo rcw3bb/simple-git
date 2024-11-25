@@ -70,7 +70,7 @@ public class GitExecutor {
 
     /**
      * A utility for quoting a string based on os type.
-     * Thus the return value is not necessary a quoted text.
+     * Thus, the return value is not necessary a quoted text.
      *
      * @param text The text to quote.
      * @param osType The os type.
