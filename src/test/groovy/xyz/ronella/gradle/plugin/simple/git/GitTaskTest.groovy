@@ -1,5 +1,9 @@
 package xyz.ronella.gradle.plugin.simple.git
 
+import xyz.ronella.gradle.plugin.simple.git.task.GitTask
+
+import java.nio.charset.StandardCharsets
+
 import static org.junit.jupiter.api.Assertions.*
 
 import org.gradle.api.Project
@@ -55,4 +59,69 @@ class GitTaskTest {
         assertEquals("git.exe not found. Please install git application and try again.", testExt.test_message)
     }
 
+    @Test
+    void testEmptyEncodedUsername() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        assertFalse(gitTask.encodedUsername.isPresent())
+    }
+
+    @Test
+    void testEmptyEncodedUsernameFromExt() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def ext = project.extensions.simple_git
+        ext.username = "ExtUsername"
+        def expected = URLEncoder.encode(ext.username.get(), StandardCharsets.UTF_8)
+        assertEquals(expected, gitTask.encodedUsername.get())
+    }
+
+    @Test
+    void testEmptyEncodedUsernameFromExtAndTask() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def ext = project.extensions.simple_git
+        gitTask.username = "TaskUsername"
+        ext.username = "ExtUsername"
+        def expected = URLEncoder.encode(gitTask.username.get(), StandardCharsets.UTF_8)
+        assertEquals(expected, gitTask.encodedUsername.get())
+    }
+
+    @Test
+    void testEmptyEncodedUsernameTask() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.username = "TaskUsername"
+        def expected = URLEncoder.encode(gitTask.username.get(), StandardCharsets.UTF_8)
+        assertEquals(expected, gitTask.encodedUsername.get())
+    }
+
+    @Test
+    void testEmptyEncodedPassword() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        assertFalse(gitTask.encodedPassword.isPresent())
+    }
+
+    @Test
+    void testEmptyEncodedPasswordFromExt() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def ext = project.extensions.simple_git
+        ext.password = "ExtPassword"
+        def expected = URLEncoder.encode(ext.password.get(), StandardCharsets.UTF_8)
+        assertEquals(expected, gitTask.encodedPassword.get())
+    }
+
+    @Test
+    void testEmptyEncodedPasswordFromExtAndTask() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def ext = project.extensions.simple_git
+        gitTask.password = "TaskPassword"
+        ext.password = "ExtPassword"
+        def expected = URLEncoder.encode(gitTask.password.get(), StandardCharsets.UTF_8)
+        assertEquals(expected, gitTask.encodedPassword.get())
+    }
+
+    @Test
+    void testEmptyEncodedPasswordTask() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.password = "TaskPassword"
+        def expected = URLEncoder.encode(gitTask.password.get(), StandardCharsets.UTF_8)
+        assertEquals(expected, gitTask.encodedPassword.get())
+    }
 }

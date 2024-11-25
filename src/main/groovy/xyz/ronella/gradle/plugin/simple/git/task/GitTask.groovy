@@ -3,6 +3,7 @@ package xyz.ronella.gradle.plugin.simple.git.task
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -13,6 +14,7 @@ import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
 import xyz.ronella.trivial.handy.OSType
 
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.stream.Collectors
@@ -51,6 +53,20 @@ abstract class GitTask extends DefaultTask {
     abstract Property<String> getCommand()
 
     /**
+     * The username for the git command.
+     * @return
+     */
+    @Input @Optional
+    abstract Property<String> getUsername()
+
+    /**
+     * The password for the git command.
+     * @return
+     */
+    @Input @Optional
+    abstract Property<String> getPassword()
+
+    /**
      * The arguments for the git command.
      */
     @Input
@@ -67,6 +83,20 @@ abstract class GitTask extends DefaultTask {
         forceDirectory.convention(true)
         directory.convention(project.rootProject.rootDir)
         initialization()
+    }
+
+    String urlEncode(final String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8)
+    }
+
+    Provider<String> getEncodedUsername() {
+        final def usrName = username.orElse(EXTENSION.username)
+        return usrName.map(___username -> urlEncode(___username))
+    }
+
+    Provider<String> getEncodedPassword() {
+        final def passwd = password.orElse(EXTENSION.password)
+        return passwd.map(___password -> urlEncode(___password))
     }
 
     /**

@@ -50,6 +50,16 @@ abstract class SimpleGitPluginExtension {
      */
     abstract Property<String> getPullRequestPattern()
 
+    /**
+     * The default username for the git command.
+     */
+    abstract Property<String> getUsername()
+
+    /**
+     * The default password for the git command.
+     */
+    abstract Property<String> getPassword()
+
     SimpleGitPluginExtension() {
         noop.convention(false)
         verbose.convention(false)
