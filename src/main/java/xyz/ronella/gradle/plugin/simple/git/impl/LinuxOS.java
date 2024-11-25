@@ -10,6 +10,12 @@ import xyz.ronella.gradle.plugin.simple.git.IScript;
  * @since 2020-05-05
  */
 public class LinuxOS implements IExecutable, IScript {
+
+    /**
+     * The constructor
+     */
+    public LinuxOS() {}
+
     @Override
     public String getExecutable() {
         return "git";

@@ -11,6 +11,11 @@ import xyz.ronella.gradle.plugin.simple.git.IScript;
  */
 public class WindowsOS implements IExecutable, IScript {
 
+    /**
+     * The constructor.
+     */
+    public WindowsOS() {}
+
     @Override
     public String getExecutable() {
         return "git.exe";

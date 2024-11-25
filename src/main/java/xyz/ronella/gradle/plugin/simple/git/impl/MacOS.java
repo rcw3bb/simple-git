@@ -7,4 +7,11 @@ package xyz.ronella.gradle.plugin.simple.git.impl;
  * @since 2020-05-14
  */
 public class MacOS extends LinuxOS {
+
+    /**
+     * The constructor.
+     */
+    public MacOS() {
+        super();
+    }
 }

@@ -9,4 +9,11 @@ package xyz.ronella.gradle.plugin.simple.git.impl;
  * @since 2020-05-05
  */
 public class OtherOS extends LinuxOS {
+
+    /**
+     * The constructor.
+     */
+    public OtherOS() {
+        super();
+    }
 }

@@ -55,6 +55,8 @@ gradlePlugin {
 java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+    withJavadocJar()
+    withSourcesJar()
 }
 
 pmd {
@@ -107,6 +109,7 @@ jar {
     enabled = false
     dependsOn test, shadowJar
     dependsOn('snyk-monitor')
+    finalizedBy(javadocJar, sourcesJar)
 }
 
 shadowJar.mustRunAfter(test)
