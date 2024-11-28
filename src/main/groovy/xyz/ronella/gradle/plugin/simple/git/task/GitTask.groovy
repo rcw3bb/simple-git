@@ -187,6 +187,7 @@ abstract class GitTask extends DefaultTask {
             case OSType.WINDOWS:
                 cmd="where"
                 break
+            case OSType.MAC:
             case OSType.LINUX:
                 cmd="which"
                 break
