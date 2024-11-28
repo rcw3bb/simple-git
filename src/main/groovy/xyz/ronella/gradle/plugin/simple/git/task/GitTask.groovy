@@ -91,17 +91,20 @@ abstract class GitTask extends DefaultTask {
         return URLEncoder.encode(value, StandardCharsets.UTF_8)
     }
 
-    protected Provider<String> getEncodedUsername() {
+    @Input @Internal
+    Provider<String> getEncodedUsername() {
         final def usrName = username.orElse(EXTENSION.username)
         return usrName.map(___username -> urlEncode(___username))
     }
 
-    protected Provider<String> getEncodedPassword() {
+    @Input @Internal
+    Provider<String> getEncodedPassword() {
         final def passwd = password.orElse(EXTENSION.password)
         return passwd.map(___password -> urlEncode(___password))
     }
 
-    protected java.util.Optional<String> getEncodedCred() {
+    @Input @Internal
+    java.util.Optional<String> getEncodedCred() {
         final var sbCred = new StringBuilderAppender(new StringBuilderDelim(":"))
                 .appendWhen(sb -> sb.append(encodedUsername.get())).when(sb -> encodedUsername.isPresent())
                 .appendWhen(sb -> sb.append(encodedPassword.get())).when(sb -> encodedUsername.isPresent() && encodedPassword.isPresent())
