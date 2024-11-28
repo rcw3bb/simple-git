@@ -23,6 +23,8 @@ abstract class GitBranch extends GitTask {
         description = 'A convenience git branch command.'
         command.convention('branch')
         forceDirectory.convention(true)
+        internalZArgs.convention(EXTENSION.getDefaultBranchArgs().orElse([]))
+        internalOptions.convention(EXTENSION.getDefaultBranchOptions().orElse([]))        
     }
 
     @Override

@@ -159,4 +159,46 @@ class GitTaskTest {
         assertEquals(expected, gitTask.insertCredToURL(expected))
     }
 
+    @Test
+    void testDefaultOptions() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.forceDirectory = false
+        gitTask.command = "clone"
+        gitTask.args = ['"https://git.com/dummy"', "\"${project.projectDir.absolutePath}\""]
+
+        def ext = (SimpleGitPluginExtension) project.extensions.simple_git
+        ext.defaultOptions = ['-c', 'dummy']
+
+        gitTask.executeCommand()
+
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+
+        def expected = "${gitExe} -c dummy clone \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString()
+
+        assertEquals(expected, cmd)
+    }
+
+    @Test
+    void testDefaultArgs() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.forceDirectory = false
+        gitTask.command = "clone"
+        gitTask.args = ['"https://git.com/dummy"', "\"${project.projectDir.absolutePath}\""]
+
+        def ext = (SimpleGitPluginExtension) project.extensions.simple_git
+        ext.defaultArgs = ['--recurse-submodules']
+
+        gitTask.executeCommand()
+
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+
+        def expected = "${gitExe} clone \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\" --recurse-submodules".toString()
+
+        assertEquals(expected, cmd)
+    }
+
 }

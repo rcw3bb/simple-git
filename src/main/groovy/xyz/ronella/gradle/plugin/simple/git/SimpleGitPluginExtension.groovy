@@ -1,5 +1,6 @@
 package xyz.ronella.gradle.plugin.simple.git
 
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
 /**
@@ -59,6 +60,46 @@ abstract class SimpleGitPluginExtension {
      * The default password for the git command.
      */
     abstract Property<String> getPassword()
+
+    /**
+     * The default options to all the tasks.
+     */
+    abstract ListProperty<String> getDefaultOptions()
+
+    /**
+     * The default args to all the tasks.
+     */
+    abstract ListProperty<String> getDefaultArgs()
+
+    /**
+     * The default arguments to all the clone tasks.
+     */
+    abstract ListProperty<String> getDefaultCloneArgs()
+
+    /**
+     * The default options to all the clone tasks.
+     */
+    abstract ListProperty<String> getDefaultCloneOptions()
+
+    /**
+     * The default arguments to all the branch tasks.
+     */
+    abstract ListProperty<String> getDefaultBranchArgs()
+
+    /**
+     * The default options to all the branch tasks.
+     */
+    abstract ListProperty<String> getDefaultBranchOptions()
+
+    /**
+     * The default options to all the pull tasks.
+     */
+    abstract ListProperty<String> getDefaultPullOptions()
+
+    /**
+     * The default arguments to all the pull tasks.
+     */
+    abstract ListProperty<String> getDefaultPullArgs()
 
     SimpleGitPluginExtension() {
         noop.convention(false)

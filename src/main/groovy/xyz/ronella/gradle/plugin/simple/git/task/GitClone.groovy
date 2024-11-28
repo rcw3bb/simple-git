@@ -27,6 +27,8 @@ abstract class GitClone extends GitTask {
         description = 'A convenience git clone command.'
         command.convention('clone')
         forceDirectory.convention(false)
+        internalZArgs.convention(EXTENSION.getDefaultCloneArgs().orElse([]))
+        internalOptions.convention(EXTENSION.getDefaultCloneOptions().orElse([]))
     }
 
     @Override

@@ -46,7 +46,7 @@ class GitCloneTest {
     }
 
     @Test
-    void testBranchRepository() {
+    void testCloneRepository() {
         def gitTask = project.tasks.gitClone
         gitTask.repository = "https://git.com/dummy"
         gitTask.branch = "master"
@@ -147,4 +147,45 @@ class GitCloneTest {
 
         assertEquals("${gitExe} -c dummy clone --branch \"master\" \"https://username:password@git.com/dummy\" \"${project.projectDir.absolutePath}\" -zargs".toString(), cmd)
     }
+
+    @Test
+    void testCloneDefaultOptions() {
+        def gitTask = (GitClone) project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+
+        def ext = (SimpleGitPluginExtension) project.extensions.simple_git
+        ext.defaultOptions = ['-c', 'dummy']
+        ext.defaultCloneOptions = ['-c', 'dummy2']
+
+        gitTask.executeCommand()
+
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+
+        def expected = "${gitExe} -c dummy -c dummy2 clone \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\"".toString()
+
+        assertEquals(expected, cmd)
+    }
+
+    @Test
+    void testCloneDefaultArgs() {
+        def gitTask = (GitClone) project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+
+        def ext = (SimpleGitPluginExtension) project.extensions.simple_git
+        ext.defaultArgs = ['--additional-arg']
+        ext.defaultCloneArgs = ['--additional-arg2']
+
+        gitTask.executeCommand()
+
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+
+        def expected = "${gitExe} clone \"https://git.com/dummy\" \"${project.projectDir.absolutePath}\" --additional-arg --additional-arg2".toString()
+
+        assertEquals(expected, cmd)
+    }
+
 }

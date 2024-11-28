@@ -77,13 +77,20 @@ abstract class GitTask extends DefaultTask {
     @Optional @Input
     abstract ListProperty<String> getZargs()
 
+    protected ListProperty<String> internalOptions
+
+    protected ListProperty<String> internalZArgs
+
     GitTask() {
         group = 'Simple Git'
         description = 'Execute a git command.'
         OS_TYPE = GitExecutor.OS_TYPE
         EXTENSION = project.extensions.simple_git
+        final var objects = project.objects
         forceDirectory.convention(true)
         directory.convention(project.rootProject.rootDir)
+        internalZArgs = objects.listProperty(String.class)
+        internalOptions = objects.listProperty(String.class)
         initialization()
     }
 
@@ -91,19 +98,19 @@ abstract class GitTask extends DefaultTask {
         return URLEncoder.encode(value, StandardCharsets.UTF_8)
     }
 
-    @Input @Internal
+    @Internal
     Provider<String> getEncodedUsername() {
         final def usrName = username.orElse(EXTENSION.username)
         return usrName.map(___username -> urlEncode(___username))
     }
 
-    @Input @Internal
+    @Internal
     Provider<String> getEncodedPassword() {
         final def passwd = password.orElse(EXTENSION.password)
         return passwd.map(___password -> urlEncode(___password))
     }
 
-    @Input @Internal
+    @Internal
     java.util.Optional<String> getEncodedCred() {
         final var sbCred = new StringBuilderAppender(new StringBuilderDelim(":"))
                 .appendWhen(sb -> sb.append(encodedUsername.get())).when(sb -> encodedUsername.isPresent())
@@ -236,6 +243,10 @@ abstract class GitTask extends DefaultTask {
             builder.addArg(command.get())
         }
         builder.addArgs(allArgs.getOrElse([]))
+        builder.addArgs(EXTENSION.defaultArgs.getOrElse([]))
+        builder.addArgs(internalZArgs.getOrElse([]))
+        builder.addOpts(EXTENSION.defaultOptions.getOrElse([]))
+        builder.addOpts(internalOptions.getOrElse([]))
         builder.addOpts(options.getOrElse([]))
         builder.addForceDirectory(forceDirectory.get())
 
