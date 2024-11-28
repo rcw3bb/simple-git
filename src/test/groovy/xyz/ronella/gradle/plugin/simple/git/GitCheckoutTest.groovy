@@ -1,6 +1,6 @@
 package xyz.ronella.gradle.plugin.simple.git
 
-import xyz.ronella.gradle.plugin.simple.git.exception.MissingBranchException
+import xyz.ronella.gradle.plugin.simple.git.task.GitCheckout
 
 import static org.junit.jupiter.api.Assertions.*
 
@@ -77,6 +77,28 @@ class GitCheckoutTest {
 
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} checkout \"master\" -zargs".toString(), cmd)
 
+    }
+
+    @Test
+    void testDefaultOptions() {
+        def gitTask = (GitCheckout) project.tasks.gitCheckout
+        gitTask.branch = 'master'
+
+        def ext = (SimpleGitPluginExtension) project.extensions.simple_git
+        ext.defaultOptions = ['-c', 'dummy']
+        ext.defaultBranchOptions = ['-c', 'dummy2']
+
+        gitTask.executeCommand()
+
+        def executor = gitTask.executor
+        def gitExe = executor.gitExe
+        def cmd = executor.command
+        def script = executor.script.toString()
+        def directory = executor.directory.toString()
+
+        def expected = "\"${script}\" \"${directory}\" ${gitExe} -c dummy -c dummy2 checkout \"master\"".toString()
+
+        assertEquals(expected, cmd)
     }
 
 }
