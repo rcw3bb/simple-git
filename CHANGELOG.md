@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0 : 2024-11-30
+
+### New
+
+* Username and password can now be set at the extension level or task level.
+* Ability to set default arguments at the extension level.
+
 ## 2.0.3 : 2023-04-21
 
 ### Fix
