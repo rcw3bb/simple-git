@@ -48,6 +48,7 @@ gradlePlugin {
             displayName = 'Simple Git Plugin'
             description = pluginDescription
             implementationClass = 'xyz.ronella.gradle.plugin.simple.git.SimpleGitPlugin'
+            tags = ['git', 'repository', 'source', 'source-control', 'versioning', 'simple-git', 'ronella']
         }
     }
 }
