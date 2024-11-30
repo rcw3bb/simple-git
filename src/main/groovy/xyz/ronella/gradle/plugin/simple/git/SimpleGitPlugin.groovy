@@ -16,6 +16,8 @@ class SimpleGitPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('simple_git', SimpleGitPluginExtension)
         project.extensions.create('simple_git_test', SimpleGitPluginTestExtension)
+        def ext = (SimpleGitPluginExtension) project.extensions.simple_git
+        ext.logger = project.logger
         project.task('gitTask', type: GitTask)
         project.task('gitClone', type: GitClone)
         project.task('gitStatus', type: GitStatus)

@@ -1,5 +1,6 @@
 package xyz.ronella.gradle.plugin.simple.git
 
+import org.gradle.api.logging.Logger
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
@@ -101,6 +102,8 @@ abstract class SimpleGitPluginExtension {
      */
     abstract ListProperty<String> getDefaultPullArgs()
 
+    abstract Property<Logger> getLogger()
+
     SimpleGitPluginExtension() {
         noop.convention(false)
         verbose.convention(false)
@@ -111,7 +114,7 @@ abstract class SimpleGitPluginExtension {
 
     def writeln(String text) {
         if (verbose.get() || noop.get()) {
-            println(text)
+            logger.get().lifecycle(text)
         }
     }
 
