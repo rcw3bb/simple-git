@@ -1,5 +1,6 @@
 package xyz.ronella.gradle.plugin.simple.git
 
+import xyz.ronella.gradle.plugin.simple.git.exception.MissingGitException
 import xyz.ronella.gradle.plugin.simple.git.task.GitTask
 
 import java.nio.charset.StandardCharsets
@@ -54,9 +55,9 @@ class GitTaskTest {
         def testExt = project.extensions.simple_git_test
         testExt.no_git_installed = true
 
-        gitTask.executeCommand()
-
-        assertEquals("git.exe not found. Please install git application and try again.", testExt.test_message)
+        assertThrows(MissingGitException, {
+            gitTask.executeCommand()
+        })
     }
 
     @Test

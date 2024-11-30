@@ -12,6 +12,7 @@ import org.gradle.api.tasks.TaskAction
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginExtension
 import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
+import xyz.ronella.gradle.plugin.simple.git.exception.MissingGitException
 import xyz.ronella.trivial.decorator.StringBuilderAppender
 import xyz.ronella.trivial.functional.impl.StringBuilderDelim
 import xyz.ronella.trivial.handy.CommandProcessorException
@@ -270,7 +271,7 @@ abstract class GitTask extends DefaultTask {
             else {
                 String message = "${GitExecutor.GIT_EXE} not found. Please install git application and try again."
                 pluginTestExt.test_message = message
-                logger.lifecycle(message)
+                throw(new MissingGitException(message))
             }
         }
     }
