@@ -4,7 +4,7 @@ The plugin that allows you access to git commands in gradle as task.
 
 # Pre-requisite
 
-* Java 11 (Minimum)
+* Java 21
 * Windows/Linux/MacOS
 * Git Application
 
@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "xyz.ronella.simple-git" version "2.0.3"
+    id "xyz.ronella.simple-git" version "2.1.0"
 }
 ```
 
@@ -45,17 +45,27 @@ plugins {
 
 The first location that the plugin will try to look for the **git executable** will be the location set by **GIT_HOME** environment variable. If the plugin cannot detect the location of the installed **git application**, it is advisable to set this variable to the correct directory where the git executable lives.
 
-## Plugin Properties
+## Plugin Extension Properties
 
 | Property | Description | Type | Default |
 |-----|------|------|-----|
-| simple_git.branch | The default branch to use by the convenience tasks except for gitDeleteBranch task. You don't want to accidentally delete a branch. | String | master |
-| simple_git.directory | Tells the plugin what is the default git application directory it will work on. | File | *The project directory* |
-| simple_git.noop | This is like the verbose property with the addition of not running the git command. This is good for debugging on what command parameters it is trying to execute. | boolean | false |
-| simple_git.pullRequestPattern | Explicitly define the pull request pattern overriding the effect of repoType parameter. <br/><br/>Example value is **pull/%s/head:%s**<br/><br/>Where the first %s will be replaced with the actual PR code and the second %s with the calculated branch *(i.e. normally with the syntax **pr-<PR-CODE>**)*. | String |  |
-| simple_git.remote | The default remote to use by the convenience tasks. | String | origin |
-| simple_git.repoType | The repository type that controls how the command parameters are processed. The valid possible values are **github** or **bitbucket**. | String | github |
-| simple_git.verbose | The plugin will to display more information on the console *(e.g. the actual git command being run)*. | boolean | false |
+| simple\_git.branch | The default branch to use by the convenience tasks except for gitDeleteBranch task. You don't want to accidentally delete a branch. | String | master |
+| simple\_git.defaultArgs | The default args to all the tasks. | List\<String\> |  |
+| simple\_git.defaultOptions | The default options to all the tasks. | List\<String\> | |
+| simple\_git.defaultCloneArgs | The default arguments to all the gitClone tasks. | List\<String\> |  |
+| simple\_git.defaultCloneOptions | The default options to all the gitClone tasks. | List\<String\> |  |
+| simple\_git.defaultBranchArgs | The default arguments to all the gitBranch tasks. This incudes gitDeleteBranch and gitCheckout tasks. | List\<String\> |  |
+| simple\_git.defaultBranchOptions | The default options to all the gitBranch tasks. This incudes gitDeleteBranch and gitCheckout tasks. | List\<String\> |  |
+| simple\_git.defaultPullArgs | The default arguments to all the gitPull tasks. | List\<String\> |  |
+| simple\_git.defaultPullOptions | The default options to all the gitPull tasks. | List\<String\> | |
+| simple\_git.directory | Tells the plugin what is the default git application directory it will work on. | File | *The project directory* |
+| simple\_git.noop | This is like the verbose property with the addition of not running the git command. This is good for debugging on what command parameters it is trying to execute. | boolean | false |
+| simple\_git.password | The password to use with gitClone task. | String |  |
+| simple\_git.pullRequestPattern | Explicitly define the pull request pattern overriding the effect of repoType parameter. <br/><br/>Example value is **pull/%s/head:%s**<br/><br/>Where the first %s will be replaced with the actual PR code and the second %s with the calculated branch *(i.e. normally with the syntax **pr-\<PR-CODE\>**)*. | String |  |
+| simple\_git.remote | The default remote to use by the convenience tasks. | String | origin |
+| simple\_git.repoType | The repository type that controls how the command parameters are processed. The valid possible values are **github** or **bitbucket**. | String | github |
+| simple\_git.username | The username to use with gitClone task. | String |  |
+| simple\_git.verbose | The plugin will display more information on the console *(e.g. the actual git command being run)*. | boolean | false |
 
 ## The forceDirectory task property
 
@@ -167,10 +177,15 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git" version "2.0.3"
+  id "xyz.ronella.simple-git" version "2.1.0"
 }
 
-simple_git.directory=new File('C:\\tmp\\simple-git')
+simple_git {
+  username = System.getenv('GIT_USERNAME')
+  password = System.getenv('GIT_PASSWORD')
+  directory=new File('C:\\tmp\\simple-git')
+  defaultCloneOptions = ['-c', 'http.sslVerify=false']
+}
 
 gitClone {
   repository = 'https://github.com/rcw3bb/simple-git.git'
