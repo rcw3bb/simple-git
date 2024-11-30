@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.4 : 2024-11-30
+
+### Fix
+
+* Make MacOS to also use the which command.
+
 ## 2.0.3 : 2023-04-21
 
 ### Fix
