@@ -37,5 +37,5 @@ org.ow2.asm:asm:9.7=jacocoAnt,pmd
 org.pcollections:pcollections:4.0.2=pmd
 org.slf4j:jul-to-slf4j:1.7.36=pmd
 org.xmlresolver:xmlresolver:5.2.2=pmd
-xyz.ronella.casual:trivial-chunk:3.0.0=compileClasspath,mainPmdAuxClasspath,plugin,runtimeClasspath,testCompileClasspath,testPmdAuxClasspath,testRuntimeClasspath
+xyz.ronella.casual:trivial-chunk:3.1.0=compileClasspath,mainPmdAuxClasspath,plugin,runtimeClasspath,testCompileClasspath,testPmdAuxClasspath,testRuntimeClasspath
 empty=annotationProcessor,dataFiles,shadow,testAnnotationProcessor
