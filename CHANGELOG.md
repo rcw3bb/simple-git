@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.0 : 2024-11-30
+
+### New
+
+* Throw exception when no git executable to use.
+
 ## 2.1.0 : 2024-11-30
 
 ### New
