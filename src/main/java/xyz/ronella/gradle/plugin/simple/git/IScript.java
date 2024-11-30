@@ -27,7 +27,7 @@ public interface IScript {
      * @param osType An instance of OSType
      * @return An implementation of IExecutable.
      */
-    public static IScript of(OSType osType) {
+    static IScript of(OSType osType) {
         switch (osType) {
             case WINDOWS:
                 return new WindowsOS();
