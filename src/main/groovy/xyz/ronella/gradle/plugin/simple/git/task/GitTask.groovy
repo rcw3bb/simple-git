@@ -14,6 +14,8 @@ import xyz.ronella.gradle.plugin.simple.git.GitExecutor
 import xyz.ronella.gradle.plugin.simple.git.SimpleGitPluginTestExtension
 import xyz.ronella.trivial.decorator.StringBuilderAppender
 import xyz.ronella.trivial.functional.impl.StringBuilderDelim
+import xyz.ronella.trivial.handy.CommandProcessorException
+import xyz.ronella.trivial.handy.CommandLocator
 import xyz.ronella.trivial.handy.OSType
 
 import java.nio.charset.StandardCharsets
@@ -179,55 +181,6 @@ abstract class GitTask extends DefaultTask {
         return allTheArgs
     }
 
-    private String detectGitExec() {
-        def osType = GitExecutor.OS_TYPE
-        def gitExec = GitExecutor.GIT_EXE
-        String cmd = null
-        switch (osType) {
-            case OSType.WINDOWS:
-                cmd="where"
-                break
-            case OSType.MAC:
-            case OSType.LINUX:
-                cmd="which"
-                break
-        }
-
-        if (cmd) {
-            def stdOutput = new ByteArrayOutputStream()
-            def errOutput = new ByteArrayOutputStream()
-
-            project.exec {
-                executable cmd
-                args gitExec
-                standardOutput = stdOutput
-                errorOutput = errOutput
-                ignoreExitValue = true
-            }
-
-            def error = errOutput.toString()
-
-            if (error.size()>0) {
-                println("detectGitExec Error: ${error}")
-            }
-
-            def knownGit = stdOutput.toString().trim()
-
-            if (knownGit.size()>0) {
-                switch (osType) {
-                    case OSType.WINDOWS:
-                        String[] execs = knownGit.split("\r\n");
-                        knownGit = execs.first();
-                        break;
-                }
-
-                return knownGit
-            }
-        }
-
-        return null
-    }
-
     /**
      * Build and instance of GitExecutor.
      *
@@ -235,10 +188,14 @@ abstract class GitTask extends DefaultTask {
      */
     @Internal
     GitExecutor getExecutor() {
-        def knownGit = detectGitExec()
         def builder = GitExecutor.getBuilder()
 
-        builder.addKnownGitExe(knownGit)
+        try {
+            def knownGit = CommandLocator.locateAsString(GitExecutor.GIT_EXE).orElse(null)
+            builder.addKnownGitExe(knownGit)
+        } catch (CommandProcessorException cpe) {
+            logger.error("detectGitExec Error: ${cpe.getMessage()}")
+        }
 
         if (command.isPresent()) {
             builder.addArg(command.get())
@@ -271,7 +228,7 @@ abstract class GitTask extends DefaultTask {
                 try (Stream<Path> entries = Files.list(dirFile.toPath())) {
                     def hasEntry = entries.findFirst().isPresent()
                     if (hasEntry) {
-                        println("${dirFile.absolutePath} is not empty.")
+                        logger.lifecycle("${dirFile.absolutePath} is not empty.")
                     }
                     return !hasEntry
                 }
@@ -313,7 +270,7 @@ abstract class GitTask extends DefaultTask {
             else {
                 String message = "${GitExecutor.GIT_EXE} not found. Please install git application and try again."
                 pluginTestExt.test_message = message
-                println(message)
+                logger.lifecycle(message)
             }
         }
     }
