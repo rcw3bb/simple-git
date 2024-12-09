@@ -34,7 +34,7 @@ configurations {
 shadowJar {
     configurations = [project.configurations.plugin]
     archiveClassifier.set("")
-    relocate 'xyz.ronella.trivial', "${project.group}.shadow.trivial"
+    relocate 'xyz.ronella.trivial', "${project.group}.simple.git.trivial"
     minimize()
 }
 
