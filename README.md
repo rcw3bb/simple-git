@@ -14,7 +14,7 @@ In your **build.gradle** file add the following plugin:
 
 ```groovy
 plugins {
-    id "xyz.ronella.simple-git" version "2.2.0"
+    id "xyz.ronella.simple-git" version "2.2.1"
 }
 ```
 
@@ -177,7 +177,7 @@ task cloneSimpleGit(type: GitClone ) {
 
 ``` groovy
 plugins {
-  id "xyz.ronella.simple-git" version "2.2.0"
+  id "xyz.ronella.simple-git" version "2.2.1"
 }
 
 simple_git {
