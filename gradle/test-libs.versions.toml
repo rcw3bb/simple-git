@@ -1,5 +1,5 @@
 [versions]
-junit-version = { require = "latest.release"}
+junit-version = "5.10.5"
 mockito-core-version = { require = "latest.release"}
 mockito-inline-version = { require = "latest.release"}
 
