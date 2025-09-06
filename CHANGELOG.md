@@ -1,6 +1,11 @@
 # Changelog
 
-## 2.3.0 : TBD
+## 2.3.0 : 2025-09-07
+
+### New
+
+* Refactor to support Gradle 9.
+* Update the dependencies.
 
 ## 2.2.1 : 2024-12-09
 
