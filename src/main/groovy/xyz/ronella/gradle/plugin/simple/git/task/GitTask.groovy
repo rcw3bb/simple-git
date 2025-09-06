@@ -108,9 +108,6 @@ abstract class GitTask extends DefaultTask {
     abstract ListProperty<String> getDefaultOptions()
     
     @Input @Optional
-    abstract Property<File> getExtensionDirectory()
-    
-    @Input @Optional
     abstract Property<File> getRootProjectDir()
 
     protected ListProperty<String> internalOptions
@@ -130,10 +127,10 @@ abstract class GitTask extends DefaultTask {
         SimpleGitPluginTestExtension testExt = project.extensions.simple_git_test
         noopMode.convention(EXTENSION.noop)
         verboseMode.convention(EXTENSION.verbose)
-        noGitInstalled.convention(testExt.no_git_installed) // Don't capture this at configuration time
+        noGitInstalled.convention(testExt.no_git_installed)
         defaultArgs.convention(EXTENSION.defaultArgs)
         defaultOptions.convention(EXTENSION.defaultOptions)
-        extensionDirectory.convention(EXTENSION.directory)
+        directory.convention(EXTENSION.directory.getOrElse(project.rootProject.rootDir))
         rootProjectDir.convention(project.rootProject.rootDir)
         
         initialization()
@@ -251,14 +248,8 @@ abstract class GitTask extends DefaultTask {
         builder.addOpts(options.getOrElse([]))
         builder.addForceDirectory(forceDirectory.get())
 
-        def  targetDir = java.util.Optional.ofNullable(directory.get())
-
-        if (directory.get() == rootProjectDir.get()) {
-            targetDir = java.util.Optional.ofNullable(extensionDirectory.getOrElse(directory.get()))
-        }
-
-        targetDir.ifPresent { ___dir->
-            builder.addDirectory(___dir)
+        if (directory.isPresent()) {
+            builder.addDirectory(directory.get())
         }
 
         return builder.build()
@@ -289,8 +280,6 @@ abstract class GitTask extends DefaultTask {
         def verboseMode = this.verboseMode.get()
         def noopMode = this.noopMode.get()
         def taskLogger = this.logger  // Capture logger reference for use in closure
-        
-        // For testing purposes - check if noGitInstalled was set at task level
         def isNoGitInstalled = noGitInstalled.isPresent() ? noGitInstalled.get() : false
         
         def executor = getExecutor()
