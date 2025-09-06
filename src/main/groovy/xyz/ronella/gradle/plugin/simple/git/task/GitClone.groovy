@@ -32,16 +32,16 @@ abstract class GitClone extends GitTask {
     }
 
     @Override
-    def initialization() {
+    protected void initialization() {
         super.initialization()
 
         if (project.hasProperty('sg_repository')) {
             repository.convention((project.sg_repository as String).trim())
-            EXTENSION.writeln("Found sg_repository: ${repository}")
+            logger.lifecycle("Found sg_repository: ${repository}")
         }
         if (project.hasProperty('sg_branch')) {
             branch.convention((project.sg_branch as String).trim())
-            EXTENSION.writeln("Found sg_branch: ${branch}")
+            logger.lifecycle("Found sg_branch: ${branch}")
         }
     }
 

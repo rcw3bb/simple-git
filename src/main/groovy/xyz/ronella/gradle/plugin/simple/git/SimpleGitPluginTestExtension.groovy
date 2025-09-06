@@ -13,9 +13,4 @@ class SimpleGitPluginTestExtension {
      */
     public boolean no_git_installed
 
-    /**
-     * Holds any test message.
-     */
-    public String test_message
-
 }

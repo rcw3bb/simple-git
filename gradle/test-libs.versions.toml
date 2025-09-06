@@ -1,13 +1,13 @@
 [versions]
 junit-version = "5.10.5"
+junit-platform-version = "1.10.5"
 mockito-core-version = { require = "latest.release"}
-mockito-inline-version = { require = "latest.release"}
 
 [libraries]
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-version" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-version" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-version" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-core-version" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline-version"}
 
 [bundles]
-unit-test = ["junit-jupiter-api", "junit-jupiter-engine", "mockito-core", "mockito-inline"]
+unit-test = ["junit-jupiter-api", "junit-jupiter-engine", "junit-platform-launcher", "mockito-core"]

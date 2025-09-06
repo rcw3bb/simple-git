@@ -112,10 +112,4 @@ abstract class SimpleGitPluginExtension {
         remote.convention('origin')
     }
 
-    def writeln(String text) {
-        if (verbose.get() || noop.get()) {
-            logger.get().lifecycle(text)
-        }
-    }
-
 }

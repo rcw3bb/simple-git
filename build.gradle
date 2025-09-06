@@ -99,7 +99,6 @@ dependencies {
 }
 
 test {
-    jvmArgs("-javaagent:${configurations.mockitoAgent.asPath}")
     useJUnitPlatform()
     dependsOn pmdMain
     finalizedBy(jacocoTestReport)

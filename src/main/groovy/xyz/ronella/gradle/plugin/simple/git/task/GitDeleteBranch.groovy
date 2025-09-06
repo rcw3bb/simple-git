@@ -24,12 +24,12 @@ abstract class GitDeleteBranch extends GitBranch {
     }
 
     @Override
-    def initialization() {
+    protected void initialization() {
         super.initialization()
 
         if (project.hasProperty('sg_force')) {
             force.convention(Boolean.valueOf((project.sg_force as String).trim()))
-            EXTENSION.writeln("Found sg_force: ${force}")
+            logger.lifecycle("Found sg_force: ${force}")
         }
     }
 

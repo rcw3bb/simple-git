@@ -65,17 +65,17 @@ abstract class GitFetchPR extends GitTask {
     abstract Property<String> getRemote()
 
     @Override
-    def initialization() {
+    protected void initialization() {
         super.initialization()
 
         if (project.hasProperty('sg_remote')) {
             remote.convention((project.sg_remote as String).trim())
-            EXTENSION.writeln("Found sg_remote: ${remote}")
+            logger.lifecycle("Found sg_remote: ${remote}")
         }
 
         if (project.hasProperty('sg_pull_request')) {
             pullRequest.convention(Integer.valueOf((project.sg_pull_request as String).trim()))
-            EXTENSION.writeln("Found sg_pull_request: ${pullRequest}")
+            logger.lifecycle("Found sg_pull_request: ${pullRequest}")
         }
     }
 

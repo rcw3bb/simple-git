@@ -28,12 +28,12 @@ abstract class GitBranch extends GitTask {
     }
 
     @Override
-    def initialization() {
+    protected void initialization() {
         super.initialization()
 
         if (project.hasProperty('sg_branch')) {
             branch.convention((project.sg_branch as String).trim())
-            EXTENSION.writeln("Found sg_branch: ${branch}")
+            logger.lifecycle("Found sg_branch: ${branch}")
         }
     }
 

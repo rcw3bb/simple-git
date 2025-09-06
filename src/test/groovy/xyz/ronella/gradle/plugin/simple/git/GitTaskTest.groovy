@@ -52,8 +52,7 @@ class GitTaskTest {
 
         def gitTask = project.tasks.gitTask
         project.extensions.simple_git.noop = false
-        def testExt = project.extensions.simple_git_test
-        testExt.no_git_installed = true
+        gitTask.noGitInstalled.set(true)
 
         assertThrows(MissingGitException, {
             gitTask.executeCommand()

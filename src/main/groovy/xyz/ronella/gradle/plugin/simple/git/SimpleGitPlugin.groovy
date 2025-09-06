@@ -18,15 +18,15 @@ class SimpleGitPlugin implements Plugin<Project> {
         project.extensions.create('simple_git_test', SimpleGitPluginTestExtension)
         def ext = (SimpleGitPluginExtension) project.extensions.simple_git
         ext.logger = project.logger
-        project.task('gitTask', type: GitTask)
-        project.task('gitClone', type: GitClone)
-        project.task('gitStatus', type: GitStatus)
-        project.task('gitFetchPR', type: GitFetchPR)
-        project.task('gitCheckout', type: GitCheckout)
-        project.task('gitBranch', type: GitBranch)
-        project.task('gitDeleteBranch', type: GitDeleteBranch)
-        project.task('gitPull', type: GitPull)
-        project.task('gitVersion', type: GitVersion)
-        project.task('gitTag', type: GitTag)
+        project.tasks.register('gitTask', GitTask)
+        project.tasks.register('gitClone', GitClone)
+        project.tasks.register('gitStatus', GitStatus)
+        project.tasks.register('gitFetchPR', GitFetchPR)
+        project.tasks.register('gitCheckout', GitCheckout)
+        project.tasks.register('gitBranch', GitBranch)
+        project.tasks.register('gitDeleteBranch', GitDeleteBranch)
+        project.tasks.register('gitPull', GitPull)
+        project.tasks.register('gitVersion', GitVersion)
+        project.tasks.register('gitTag', GitTag)
     }
 }
