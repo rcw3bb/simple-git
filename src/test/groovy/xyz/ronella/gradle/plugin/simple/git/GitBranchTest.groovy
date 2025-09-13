@@ -150,4 +150,136 @@ class GitBranchTest {
 
         assertEquals(expected, cmd)
     }
+
+    @Test
+    void testDefaultBranchFromExtension() {
+        def gitTask = project.tasks.gitBranch
+        
+        // The extension has a default branch of "master"
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("master"))
+    }
+
+    @Test
+    void testProjectPropertiesBranch() {
+        project.ext.sg_branch = "feature-test"
+        def gitTask = project.tasks.create("testBranch", xyz.ronella.gradle.plugin.simple.git.task.GitBranch)
+        assertEquals("feature-test", gitTask.branch.get())
+    }
+
+    @Test
+    void testBranchFromExtension() {
+        project.extensions.simple_git.branch = "main"
+        def gitTask = project.tasks.gitBranch
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("main"))
+    }
+
+    @Test
+    void testTaskBranchOverridesExtension() {
+        project.extensions.simple_git.branch = "main"
+        def gitTask = project.tasks.gitBranch
+        gitTask.branch = "feature"
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("feature"))
+        assertFalse(cmd.contains("main"))
+    }
+
+    @Test
+    void testCalcArgsWithCommand() {
+        def gitTask = (GitBranch) project.tasks.gitBranch
+        gitTask.command = "status"
+        gitTask.args = ["--short"]
+        
+        def calcArgs = gitTask.calcArgs()
+        assertEquals(["--short"], calcArgs.get())
+    }
+
+    @Test
+    void testCalcArgsWithoutCommand() {
+        def gitTask = (GitBranch) project.tasks.gitBranch
+        gitTask.command = ""
+        gitTask.args = []
+        
+        def calcArgs = gitTask.calcArgs()
+        assertEquals([], calcArgs.get())
+    }
+
+    @Test
+    void testGetAllArgsWithZargs() {
+        def gitTask = project.tasks.gitBranch
+        gitTask.branch = "master"
+        gitTask.zargs = ["--verbose"]
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        assertTrue(argsList.contains("\"master\""))
+        assertTrue(argsList.contains("--verbose"))
+    }
+
+    @Test
+    void testGetAllArgsWithoutZargs() {
+        def gitTask = project.tasks.gitBranch
+        gitTask.branch = "master"
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        assertTrue(argsList.contains("\"master\""))
+    }
+
+    @Test
+    void testForceDirectoryTrue() {
+        def gitTask = project.tasks.gitBranch
+        
+        // Verify that forceDirectory is true by default for GitBranch
+        assertTrue(gitTask.forceDirectory.get())
+    }
+
+    @Test
+    void testCommandConvention() {
+        def gitTask = project.tasks.gitBranch
+        
+        // Verify that command is set to 'branch' by default
+        assertEquals("branch", gitTask.command.get())
+    }
+
+    @Test
+    void testInternalZArgsFromExtension() {
+        project.extensions.simple_git.defaultBranchArgs = ["--list"]
+        def gitTask = project.tasks.create("testBranch", xyz.ronella.gradle.plugin.simple.git.task.GitBranch)
+        gitTask.branch = "master"
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("--list"))
+    }
+
+    @Test
+    void testInternalOptionsFromExtension() {
+        project.extensions.simple_git.defaultBranchOptions = ["-c", "color.ui=false"]
+        def gitTask = project.tasks.create("testBranch", xyz.ronella.gradle.plugin.simple.git.task.GitBranch)
+        gitTask.branch = "master"
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("-c"))
+        assertTrue(cmd.contains("color.ui=false"))
+    }
 }

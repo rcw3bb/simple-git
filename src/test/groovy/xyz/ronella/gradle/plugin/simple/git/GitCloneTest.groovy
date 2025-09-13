@@ -188,4 +188,122 @@ class GitCloneTest {
         assertEquals(expected, cmd)
     }
 
+    @Test
+    void testMissingDirectoryException() {
+        def gitTask = project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+        
+        // Create a new task with directory not set by default
+        def customTask = project.tasks.create("customClone", xyz.ronella.gradle.plugin.simple.git.task.GitClone)
+        customTask.repository = "https://git.com/dummy"
+        customTask.directory = project.objects.property(File.class) // Unset property
+        
+        assertThrows(xyz.ronella.gradle.plugin.simple.git.exception.MissingDirectoryException, {
+            customTask.executeCommand()
+        })
+    }
+
+    @Test
+    void testProjectPropertiesRepository() {
+        project.ext.sg_repository = "https://github.com/user/repo.git"
+        def gitTask = project.tasks.create("testClone", xyz.ronella.gradle.plugin.simple.git.task.GitClone)
+        assertEquals("https://github.com/user/repo.git", gitTask.repository.get())
+    }
+
+    @Test
+    void testProjectPropertiesBranch() {
+        project.ext.sg_branch = "develop"
+        def gitTask = project.tasks.create("testClone", xyz.ronella.gradle.plugin.simple.git.task.GitClone)
+        assertEquals("develop", gitTask.branch.get())
+    }
+
+    @Test
+    void testGetAllArgsWithoutBranch() {
+        def gitTask = project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        assertTrue(argsList.contains("\"https://git.com/dummy\""))
+        assertFalse(argsList.contains("--branch"))
+    }
+
+    @Test
+    void testGetAllArgsWithBranch() {
+        def gitTask = project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+        gitTask.branch = "feature"
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        assertTrue(argsList.contains("--branch"))
+        assertTrue(argsList.contains("\"feature\""))
+        assertTrue(argsList.contains("\"https://git.com/dummy\""))
+    }
+
+    @Test
+    void testRepositoryWithUsernameOnly() {
+        def gitTask = (GitClone) project.tasks.gitClone
+        gitTask.username = "testuser"
+        gitTask.repository = "https://git.com/dummy"
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("https://testuser@git.com/dummy"))
+    }
+
+    @Test
+    void testRepositoryWithPasswordOnly() {
+        def gitTask = (GitClone) project.tasks.gitClone
+        gitTask.password = "testpass"
+        gitTask.repository = "https://git.com/dummy"
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        // Password only should not modify URL
+        assertTrue(cmd.contains("https://git.com/dummy"))
+        assertFalse(cmd.contains("testpass"))
+    }
+
+    @Test
+    void testForceDirectoryFalse() {
+        def gitTask = project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+        
+        // Verify that forceDirectory is false by default for GitClone
+        assertFalse(gitTask.forceDirectory.get())
+    }
+
+    @Test
+    void testGetAllArgsWithZargs() {
+        def gitTask = project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+        gitTask.zargs = ["--depth", "1"]
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        assertTrue(argsList.contains("--depth"))
+        assertTrue(argsList.contains("1"))
+    }
+
+    @Test
+    void testGetAllArgsWithCredentials() {
+        def gitTask = project.tasks.gitClone
+        gitTask.repository = "https://git.com/dummy"
+        gitTask.username = "user"
+        gitTask.password = "pass"
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        assertTrue(argsList.contains("\"https://user:pass@git.com/dummy\""))
+    }
+
 }

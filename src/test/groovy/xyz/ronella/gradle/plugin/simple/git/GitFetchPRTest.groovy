@@ -131,4 +131,107 @@ class GitFetchPRTest {
 
         assertEquals("\"${script}\" \"${directory}\" ${gitExe} fetch \"origin\" ${pullRequest}/pr-${pullRequest}".toString(), cmd)
     }
+
+    @Test
+    void testDefaultRemoteFromExtension() {
+        def gitTask = project.tasks.gitFetchPR
+        gitTask.pullRequest = 1
+        
+        // The extension has a default remote of "origin"
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("origin"))
+    }
+
+    @Test
+    void testProjectPropertiesRemote() {
+        project.ext.sg_remote = "upstream"
+        def gitTask = project.tasks.create("testFetchPR", xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR)
+        assertEquals("upstream", gitTask.remote.get())
+    }
+
+    @Test
+    void testProjectPropertiesPullRequest() {
+        project.ext.sg_pull_request = "123"
+        def gitTask = project.tasks.create("testFetchPR", xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR)
+        assertEquals(123, gitTask.pullRequest.get())
+    }
+
+    @Test
+    void testEnumRepoTypePatternGitHub() {
+        def pattern = xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.GITHUB
+        def result = pattern.getPattern(123L, "pr-123")
+        assertEquals("pull/123/head:pr-123", result)
+    }
+
+    @Test
+    void testEnumRepoTypePatternBitbucket() {
+        def pattern = xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.BITBUCKET
+        def result = pattern.getPattern(456L, "pr-456")
+        assertEquals("pull-requests/456/from:pr-456", result)
+    }
+
+    @Test
+    void testEnumRepoTypePatternOfGitHub() {
+        def pattern = xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.of("github")
+        assertEquals(xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.GITHUB, pattern)
+    }
+
+    @Test
+    void testEnumRepoTypePatternOfBitbucket() {
+        def pattern = xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.of("bitbucket")
+        assertEquals(xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.BITBUCKET, pattern)
+    }
+
+    @Test
+    void testEnumRepoTypePatternOfUnknown() {
+        def pattern = xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.of("unknown")
+        assertEquals(xyz.ronella.gradle.plugin.simple.git.task.GitFetchPR.EnumRepoTypePattern.GITHUB, pattern)
+    }
+
+    @Test
+    void testGetAllArgsWithZargs() {
+        def gitTask = project.tasks.gitFetchPR
+        gitTask.remote = "origin"
+        gitTask.pullRequest = 1
+        gitTask.zargs = ["--force"]
+        
+        def allArgs = gitTask.getAllArgs()
+        def argsList = allArgs.get()
+        
+        // Should contain remote, pull request pattern, and zargs
+        assertTrue(argsList.contains("\"origin\""))
+        assertTrue(argsList.contains("pull/1/head:pr-1"))
+        assertTrue(argsList.contains("--force"))
+    }
+
+    @Test
+    void testRemoteFromExtension() {
+        project.extensions.simple_git.remote = "upstream"
+        def gitTask = project.tasks.gitFetchPR
+        gitTask.pullRequest = 1
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("upstream"))
+    }
+
+    @Test
+    void testTaskRemoteOverridesExtension() {
+        project.extensions.simple_git.remote = "upstream"
+        def gitTask = project.tasks.gitFetchPR
+        gitTask.remote = "origin"
+        gitTask.pullRequest = 1
+        
+        gitTask.executeCommand()
+        def executor = gitTask.executor
+        def cmd = executor.command
+        
+        assertTrue(cmd.contains("origin"))
+        assertFalse(cmd.contains("upstream"))
+    }
 }

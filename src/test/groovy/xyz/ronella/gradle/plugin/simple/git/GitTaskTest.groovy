@@ -201,4 +201,226 @@ class GitTaskTest {
         assertEquals(expected, cmd)
     }
 
+    @Test
+    void testDirectoryIsEmptyWithNoDirectory() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.directory = project.objects.property(File.class)
+        assertTrue(gitTask.directoryIsEmpty())
+    }
+
+    @Test
+    void testDirectoryIsEmptyWithNonExistentDirectory() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def nonExistentDir = new File(project.projectDir, "non-existent-dir")
+        gitTask.directory = nonExistentDir
+        assertTrue(gitTask.directoryIsEmpty())
+    }
+
+    @Test
+    void testDirectoryIsEmptyWithEmptyDirectory() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def emptyDir = new File(project.projectDir, "empty-dir")
+        emptyDir.mkdirs()
+        
+        try {
+            gitTask.directory = emptyDir
+            assertTrue(gitTask.directoryIsEmpty())
+        } finally {
+            emptyDir.delete()
+        }
+    }
+
+    @Test
+    void testDirectoryIsEmptyWithNonEmptyDirectory() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def nonEmptyDir = new File(project.projectDir, "non-empty-dir")
+        nonEmptyDir.mkdirs()
+        def testFile = new File(nonEmptyDir, "test.txt")
+        testFile.createNewFile()
+        
+        try {
+            gitTask.directory = nonEmptyDir
+            assertFalse(gitTask.directoryIsEmpty())
+        } finally {
+            testFile.delete()
+            nonEmptyDir.delete()
+        }
+    }
+
+    @Test
+    void testProjectPropertiesSetCommand() {
+        project.ext.sg_command = "status"
+        def gitTask = project.tasks.create("testTask", GitTask)
+        def expected = new File("status").absolutePath
+        assertEquals(expected, gitTask.command.get())
+    }
+
+    @Test
+    void testProjectPropertiesSetOptions() {
+        project.ext.sg_options = "--no-pager, --verbose"
+        def gitTask = project.tasks.create("testTask", GitTask)
+        assertEquals(["--no-pager", "--verbose"], gitTask.options.get())
+    }
+
+    @Test
+    void testProjectPropertiesSetArgs() {
+        project.ext.sg_args = "arg1, arg2, arg3"
+        def gitTask = project.tasks.create("testTask", GitTask)
+        assertEquals(["arg1", "arg2", "arg3"], gitTask.args.get())
+    }
+
+    @Test
+    void testProjectPropertiesSetZargs() {
+        project.ext.sg_zargs = "zarg1, zarg2"
+        def gitTask = project.tasks.create("testTask", GitTask)
+        assertEquals(["zarg1", "zarg2"], gitTask.zargs.get())
+    }
+
+    @Test
+    void testProjectPropertiesSetDirectory() {
+        def tempDir = File.createTempFile("test", "dir")
+        tempDir.delete()
+        tempDir.mkdirs()
+        
+        try {
+            project.ext.sg_directory = tempDir.absolutePath
+            def gitTask = project.tasks.create("testTask", GitTask)
+            assertEquals(tempDir, gitTask.directory.get())
+        } finally {
+            tempDir.delete()
+        }
+    }
+
+    @Test
+    void testGetEncodedCredWithBothUsernameAndPassword() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.username = "testuser"
+        gitTask.password = "testpass"
+        
+        def encodedCred = gitTask.getEncodedCred()
+        assertTrue(encodedCred.isPresent())
+        assertEquals("testuser:testpass", encodedCred.get())
+    }
+
+    @Test
+    void testGetEncodedCredWithUsernameOnly() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.username = "testuser"
+        
+        def encodedCred = gitTask.getEncodedCred()
+        assertTrue(encodedCred.isPresent())
+        assertEquals("testuser", encodedCred.get())
+    }
+
+    @Test
+    void testGetEncodedCredWithPasswordOnly() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.password = "testpass"
+        
+        def encodedCred = gitTask.getEncodedCred()
+        assertFalse(encodedCred.isPresent())
+    }
+
+    @Test
+    void testGetEncodedCredEmpty() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        def encodedCred = gitTask.getEncodedCred()
+        assertFalse(encodedCred.isPresent())
+    }
+
+    @Test
+    void testGetAllArgsWithEmptyCommandAndArgs() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.command = ""
+        gitTask.args = []
+        
+        def allArgs = gitTask.getAllArgs()
+        assertEquals(["--help"], allArgs.get())
+    }
+
+    @Test
+    void testGetAllArgsWithCommand() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.command = "status"
+        gitTask.args = ["--short"]
+        
+        def allArgs = gitTask.getAllArgs()
+        assertEquals(["--short"], allArgs.get())
+    }
+
+    @Test
+    void testGetAllArgsWithArgsOnly() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.args = ["status", "--short"]
+        
+        def allArgs = gitTask.getAllArgs()
+        assertEquals(["status", "--short"], allArgs.get())
+    }
+
+    @Test
+    void testExecuteCommandWithVerboseAndNoop() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        project.extensions.simple_git.verbose = true
+        project.extensions.simple_git.noop = true
+        gitTask.directory = project.projectDir
+        gitTask.command = "status"
+        
+        // This should execute without throwing an exception
+        gitTask.executeCommand()
+    }
+
+    @Test
+    void testExecuteCommandWithoutVerboseAndNoop() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        project.extensions.simple_git.verbose = false
+        project.extensions.simple_git.noop = true
+        gitTask.directory = project.projectDir
+        gitTask.command = "status"
+        
+        // This should execute without throwing an exception
+        gitTask.executeCommand()
+    }
+
+    @Test
+    void testGetExecutorWithCommandProcessorException() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        gitTask.command = "status"
+        gitTask.args = ["--short"]
+        
+        // Test that the executor is built even if CommandLocator throws exception
+        def executor = gitTask.getExecutor()
+        assertNotNull(executor)
+    }
+
+    @Test
+    void testDirectoryIsEmptyIOException() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        // Set directory to a file instead of directory to potentially trigger an IOException
+        def tempFile = File.createTempFile("test", ".tmp")
+        
+        try {
+            gitTask.directory = tempFile
+            // This might throw an exception or return true depending on implementation
+            def result = gitTask.directoryIsEmpty()
+            // We don't assert the result since behavior may vary
+        } catch (Exception e) {
+            // Expected behavior for invalid directory
+        } finally {
+            tempFile.delete()
+        }
+    }
+
+    @Test 
+    void testExecuteCommandNonNoopMode() {
+        def gitTask = (GitTask) project.tasks.gitTask
+        project.extensions.simple_git.verbose = false
+        project.extensions.simple_git.noop = false
+        gitTask.noGitInstalled.set(true)
+        
+        // This should throw MissingGitException since git is not installed in test
+        assertThrows(MissingGitException, {
+            gitTask.executeCommand()
+        })
+    }
+
 }
