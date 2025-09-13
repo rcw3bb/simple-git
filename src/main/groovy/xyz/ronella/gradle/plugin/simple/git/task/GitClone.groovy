@@ -27,26 +27,22 @@ abstract class GitClone extends GitTask {
         description = 'A convenience git clone command.'
         command.convention('clone')
         forceDirectory.convention(false)
+        
         internalZArgs.convention(EXTENSION.getDefaultCloneArgs().orElse([]))
         internalOptions.convention(EXTENSION.getDefaultCloneOptions().orElse([]))
-    }
-
-    @Override
-    protected void initialization() {
-        super.initialization()
 
         if (project.hasProperty('sg_repository')) {
             repository.convention((project.sg_repository as String).trim())
-            logger.lifecycle("Found sg_repository: ${repository}")
+            logger.lifecycle("Found sg_repository: ${project.sg_repository}")
         }
         if (project.hasProperty('sg_branch')) {
             branch.convention((project.sg_branch as String).trim())
-            logger.lifecycle("Found sg_branch: ${branch}")
+            logger.lifecycle("Found sg_branch: ${project.sg_branch}")
         }
     }
 
     @Override
-    ListProperty<String> getAllArgs() {
+    protected ListProperty<String> getAllArgs() {
         ListProperty<String> newArgs = super.getAllArgs()
 
         if (branch.isPresent()) {

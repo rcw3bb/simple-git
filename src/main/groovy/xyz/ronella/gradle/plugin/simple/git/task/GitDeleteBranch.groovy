@@ -21,28 +21,23 @@ abstract class GitDeleteBranch extends GitBranch {
     GitDeleteBranch() {
         super()
         description = 'A convenience git branch command for deletion.'
-    }
-
-    @Override
-    protected void initialization() {
-        super.initialization()
-
+        
         if (project.hasProperty('sg_force')) {
             force.convention(Boolean.valueOf((project.sg_force as String).trim()))
-            logger.lifecycle("Found sg_force: ${force}")
+            logger.lifecycle("Found sg_force: ${project.sg_force}")
         }
     }
 
     @Override
-    ListProperty<String> getAllArgs() {
-        def newArgs = super.getAllArgs()
+    protected ListProperty<String> getAllArgs() {
+        ListProperty<String> newArgs = super.getAllArgs()
 
         if (branch.isPresent()) {
             def quotedBranch= GitExecutor.quoteString(branch.get(), OS_TYPE)
             def argsToClean = new ArrayList<String>(newArgs.get())
 
             argsToClean.removeIf({___arg -> quotedBranch==___arg || zargs.get().contains(___arg)})
-            newArgs = project.getObjects().listProperty(String.class)
+            newArgs = getObjects().listProperty(String.class)
             newArgs.addAll(argsToClean.asList())
             newArgs.addAll((force.getOrElse(false) ? '-D' : '-d'), quotedBranch)
         }

@@ -17,7 +17,7 @@ abstract class GitTag extends GitTask {
     }
 
     @Override
-    ListProperty<String> getAllArgs() {
+    protected ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
         if (zargs.isPresent()) {

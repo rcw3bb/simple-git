@@ -133,7 +133,36 @@ abstract class GitTask extends DefaultTask {
         directory.convention(EXTENSION.directory.getOrElse(project.rootProject.rootDir))
         rootProjectDir.convention(project.rootProject.rootDir)
         
-        initialization()
+        if (project.hasProperty('sg_directory')) {
+            directory.convention(new File((project.sg_directory as String)))
+            logger.lifecycle("Found sg_directory: ${project.sg_directory}")
+        }
+
+        if (project.hasProperty('sg_command')) {
+            command.convention(new File((project.sg_command as String).trim()).absolutePath)
+            logger.lifecycle("Found sg_command: ${project.sg_command}")
+        }
+
+        if (project.hasProperty('sg_options')) {
+            options.convention((project.sg_options as String).split(",").toList().stream()
+                    .map( {___arg -> ___arg.trim()})
+                    .collect(Collectors.toList()))
+            logger.lifecycle("Found sg_options: ${project.sg_options}")
+        }
+
+        if (project.hasProperty('sg_args')) {
+            args.convention((project.sg_args as String).split(",").toList().stream()
+                    .map( { ___arg -> ___arg.trim()})
+                    .collect(Collectors.toList()))
+            logger.lifecycle("Found sg_args: ${project.sg_args}")
+        }
+
+        if (project.hasProperty('sg_zargs')) {
+            zargs.convention((project.sg_zargs as String).split(",").toList().stream()
+                    .map( { ___arg -> ___arg.trim()})
+                    .collect(Collectors.toList()))
+            logger.lifecycle("Found sg_zargs: ${project.sg_zargs}")
+        }
     }
 
     protected String urlEncode(final String value) {
@@ -163,43 +192,6 @@ abstract class GitTask extends DefaultTask {
     String insertCredToURL(String url) {
         final var encodedCred = getEncodedCred()
         return encodedCred.isPresent() ? url.replaceFirst("://", "://" + encodedCred.get() + "@") : url
-    }
-
-    /**
-     * Initialized fields based on command line parameters.
-     */
-    protected void initialization() {
-
-        if (project.hasProperty('sg_directory')) {
-            directory.convention(new File((project.sg_directory as String)))
-            logger.lifecycle("Found sg_directory: ${directory}")
-        }
-
-        if (project.hasProperty('sg_command')) {
-            command.convention(new File((project.sg_command as String).trim()).absolutePath)
-            logger.lifecycle("Found sg_command: ${command}")
-        }
-
-        if (project.hasProperty('sg_options')) {
-            options.convention((project.sg_options as String).split(",").toList().stream()
-                    .map( {___arg -> ___arg.trim()})
-                    .collect(Collectors.toList()))
-            logger.lifecycle("Found sg_options: ${options}")
-        }
-
-        if (project.hasProperty('sg_args')) {
-            args.convention((project.sg_args as String).split(",").toList().stream()
-                    .map( { ___arg -> ___arg.trim()})
-                    .collect(Collectors.toList()))
-            logger.lifecycle("Found sg_args: ${args}")
-        }
-
-        if (project.hasProperty('sg_zargs')) {
-            zargs.convention((project.sg_zargs as String).split(",").toList().stream()
-                    .map( { ___arg -> ___arg.trim()})
-                    .collect(Collectors.toList()))
-            logger.lifecycle("Found sg_zargs: ${zargs}")
-        }
     }
 
     /**
@@ -290,7 +282,6 @@ abstract class GitTask extends DefaultTask {
                 String[] fullCommand = [context.command]
                 Path scriptFile = context.script
                 
-                // Use logger directly since writeln method has scope issues in closure
                 if (verboseMode || noopMode) {
                     taskLogger.lifecycle("Script: " + scriptFile.toString())
                     taskLogger.lifecycle("OS: ${GitExecutor.OS_TYPE}")

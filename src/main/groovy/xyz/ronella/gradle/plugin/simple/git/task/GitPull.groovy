@@ -13,7 +13,9 @@ abstract class GitPull extends GitTask {
         description = 'A convenience git pull command.'
         command.convention('pull')
         forceDirectory.convention(true)
+
         internalZArgs.convention(EXTENSION.getDefaultPullArgs().orElse([]))
         internalOptions.convention(EXTENSION.getDefaultPullOptions().orElse([]))
     }
+
 }

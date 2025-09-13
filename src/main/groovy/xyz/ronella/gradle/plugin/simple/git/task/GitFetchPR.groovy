@@ -47,6 +47,16 @@ abstract class GitFetchPR extends GitTask {
         description = 'A convenience git fetch command for targeting a pull request.'
         command.convention('fetch')
         forceDirectory.convention(true)
+        
+        if (project.hasProperty('sg_remote')) {
+            remote.convention((project.sg_remote as String).trim())
+            logger.lifecycle("Found sg_remote: ${project.sg_remote}")
+        }
+
+        if (project.hasProperty('sg_pull_request')) {
+            pullRequest.convention(Integer.valueOf((project.sg_pull_request as String).trim()))
+            logger.lifecycle("Found sg_pull_request: ${project.sg_pull_request}")
+        }
     }
 
     /**
@@ -65,22 +75,7 @@ abstract class GitFetchPR extends GitTask {
     abstract Property<String> getRemote()
 
     @Override
-    protected void initialization() {
-        super.initialization()
-
-        if (project.hasProperty('sg_remote')) {
-            remote.convention((project.sg_remote as String).trim())
-            logger.lifecycle("Found sg_remote: ${remote}")
-        }
-
-        if (project.hasProperty('sg_pull_request')) {
-            pullRequest.convention(Integer.valueOf((project.sg_pull_request as String).trim()))
-            logger.lifecycle("Found sg_pull_request: ${pullRequest}")
-        }
-    }
-
-    @Override
-    ListProperty<String> getAllArgs() {
+    protected ListProperty<String> getAllArgs() {
         def newArgs = super.getAllArgs()
 
         def targetRemote = java.util.Optional.ofNullable(remote.getOrElse(EXTENSION.remote.getOrNull()))
@@ -101,7 +96,7 @@ abstract class GitFetchPR extends GitTask {
                     String.format(EXTENSION.pullRequestPattern.get(), prValue, prBranch)
                     : repoType.getPattern(prValue, prBranch)
             newArgs.add(prArg)
-            project.ext.sg_branch = prBranch
+            // Note: Removed project.ext.sg_branch setting for configuration cache compatibility
         }
         else {
             throw new MissingPullRequestException()

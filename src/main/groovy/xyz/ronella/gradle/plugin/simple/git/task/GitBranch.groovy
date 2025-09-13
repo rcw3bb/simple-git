@@ -23,23 +23,29 @@ abstract class GitBranch extends GitTask {
         description = 'A convenience git branch command.'
         command.convention('branch')
         forceDirectory.convention(true)
+
         internalZArgs.convention(EXTENSION.getDefaultBranchArgs().orElse([]))
-        internalOptions.convention(EXTENSION.getDefaultBranchOptions().orElse([]))        
-    }
-
-    @Override
-    protected void initialization() {
-        super.initialization()
-
+        internalOptions.convention(EXTENSION.getDefaultBranchOptions().orElse([]))
+        
         if (project.hasProperty('sg_branch')) {
             branch.convention((project.sg_branch as String).trim())
-            logger.lifecycle("Found sg_branch: ${branch}")
+            logger.lifecycle("Found sg_branch: ${project.sg_branch}")
         }
     }
 
+    protected ListProperty<String> calcArgs() {
+        def newArgs = args.get()
+        def allTheArgs = getObjects().listProperty(String.class)
+        if ((command.getOrElse("").length()>0 || newArgs.size() > 0)) {
+            allTheArgs.addAll(newArgs)
+        }
+
+        return allTheArgs
+    }
+
     @Override
-    ListProperty<String> getAllArgs() {
-        def newArgs = super.getAllArgs()
+    protected ListProperty<String> getAllArgs() {
+        ListProperty<String> newArgs = calcArgs()
 
         def targetBranch = java.util.Optional.ofNullable(branch.getOrElse(EXTENSION.branch.getOrNull()))
 
