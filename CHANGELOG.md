@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.1 : 2025-09-14
+
+### Fix
+* Compatibility with both Gradle 8.x and Gradle 9.x
+
+
 ## 2.3.0 : 2025-09-07 (Not compatible with Gradle 8.* use 2.2.1 instead)
 
 ### New
